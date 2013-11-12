@@ -40,3 +40,6 @@ nosetests.xml
 *.hdr
 *.img
 *.dat
+
+# Test coverage report
+htmlcov
