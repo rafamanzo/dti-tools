@@ -21,6 +21,7 @@
 ###########
 
 import sys                    # Makes possible to get the arguments
+import os                     # File existence checking
 import nibabel as nib         # Lib for reading and writing Nifit1
 import numpy as np            # Nibabel is based on Numpy
 
@@ -48,7 +49,15 @@ def process_partition(x_range, y_range, z_range):
 # Main #
 ########
 
-#TODO: validate arguments
+if len(sys.argv) != 4:
+  print('This program expects three arguments: tensor file; mask file; and mean diffusivity threshold.', file=sys.stderr)
+  exit(1)
+elif not os.path.isfile(str(sys.argv[1])):
+  print('The given tensor file does not exists:\n%s'%str(sys.argv[1]), file=sys.stderr)
+  exit(1)
+elif not os.path.isfile(str(sys.argv[2])):
+  print('The given mask file does not exists:\n%s'%str(sys.argv[2]), file=sys.stderr)
+  exit(1)
 
 tensor = nib.load(str(sys.argv[1]))
 mask = nib.load(str(sys.argv[2]))
@@ -60,13 +69,6 @@ mask_data = mask.get_data()
 mask_shape = mask.shape
 
 isotropy_mask = np.zeros(mask_shape, dtype=np.int16)
-
-#for x in range(0,mask_shape[0]):
-#  for y in range(0,mask_shape[1]):
-#    for z in range(0,mask_shape[2]):
-#      if mask_data[x][y][z]:
-#        if mean_diffusivity(tensor_data[x][y][z]) <= threshold:
-#          isotropy_mask[x][y][z] = 1
 
 workers_count = multiprocessing.cpu_count()
 partition_size = int(mask_shape[0]/workers_count)
