@@ -17,15 +17,11 @@
 from threading import Thread  # Makes possible to create threads
 import multiprocessing        # Useful on getting the processor count
 
-class CPUParallelStep:
-  def validate_args(self):
-    return True
+from classes.base.step import Step
 
-  def load_data(self):
-    return True
-
+class CPUParallelStep(Step):
   def process_partition(self, x_range, y_range, z_range):
-    raise NotImplementedError("Please Implement this method")
+    raise NotImplementedError("Please implement this method")
 
   def process(self):
     workers_count = multiprocessing.cpu_count()
@@ -51,12 +47,3 @@ class CPUParallelStep:
 
     for i in range(0, workers_count):
       workers[i].join()
-
-  def save(save):
-    return True
-
-  def run(self):
-    self.validate_args()
-    self.load_data()
-    self.process()
-    self.save()
