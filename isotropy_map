@@ -1,0 +1,98 @@
+#!/usr/bin/python
+
+# This file is part of Improving Tractogrophy
+# Copyright (C) 2013 it's respectives authors (please see the AUTHORS file)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+###########
+# Imports #
+###########
+
+import sys                    # Makes possible to get the arguments
+import nibabel as nib         # Lib for reading and writing Nifit1
+import numpy as np            # Nibabel is based on Numpy
+
+from threading import Thread  # Makes possible to create threads
+import multiprocessing        # Useful on getting the processor count
+
+#######################
+# Auxiliary functions #
+#######################
+
+def mean_diffusivity(tensor):
+  return (tensor[0] + tensor[3] + tensor[5])/3 # The sum of the three eigenvalues is equal to the trace of the tensor
+
+def process_partition(x_range, y_range, z_range):
+  global isotropy_mask
+
+  for x in range(x_range[0],x_range[1]):
+    for y in range(y_range[0],y_range[1]):
+      for z in range(z_range[0],z_range[1]):
+        if mask_data[x][y][z]:
+          if mean_diffusivity(tensor_data[x][y][z]) <= threshold:
+            isotropy_mask[x][y][z] = 1
+
+########
+# Main #
+########
+
+#TODO: validate arguments
+
+tensor = nib.load(str(sys.argv[1]))
+mask = nib.load(str(sys.argv[2]))
+threshold = float(sys.argv[3])
+
+tensor_data = tensor.get_data()
+
+mask_data = mask.get_data()
+mask_shape = mask.shape
+
+isotropy_mask = np.zeros(mask_shape, dtype=np.int16)
+
+#for x in range(0,mask_shape[0]):
+#  for y in range(0,mask_shape[1]):
+#    for z in range(0,mask_shape[2]):
+#      if mask_data[x][y][z]:
+#        if mean_diffusivity(tensor_data[x][y][z]) <= threshold:
+#          isotropy_mask[x][y][z] = 1
+
+workers_count = multiprocessing.cpu_count()
+partition_size = int(mask_shape[0]/workers_count)
+extra_size = mask_shape[0]%workers_count
+workers = []
+
+for i in range(1, workers_count+1):
+  if i == workers_count:
+    workers.append(Thread(target=process_partition, args=(((i - 1)*partition_size, i*partition_size + extra_size), 
+                                                          (0, mask_shape[1]),
+                                                          (0, mask_shape[2]))
+                         )
+                  )
+  else:
+    workers.append(Thread(target=process_partition, args=(((i - 1)*partition_size, i*partition_size), 
+                                                          (0, mask_shape[1]),
+                                                          (0, mask_shape[2]))
+                         )
+                  )
+
+  workers[i-1].start()
+
+for i in range(0, workers_count):
+  workers[i].join()
+
+isotropy_img = nib.Nifti1Image(isotropy_mask, np.eye(4))
+isotropy_img.to_filename('isotropy_mask.nii.gz')
+
+exit(0)
