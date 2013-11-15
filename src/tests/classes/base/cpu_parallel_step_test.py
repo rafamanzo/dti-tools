@@ -15,42 +15,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-sys.path.append(sys.path[0][:-22])
+sys.path.append(sys.path[0][:-18])
 
 import unittest
 from unittest.mock import MagicMock
 
-from src.classes.base.step import Step
+from src.classes.base.cpu_parallel_step import CPUParallelStep
 
-class StepTestCase(unittest.TestCase):
+class CPUParallelStepTestCase(unittest.TestCase):
   def setUp(self):
-    self.step = Step()
+    self.cpu_parallel_step = CPUParallelStep()
 
-  def test_validate_args(self):
-    self.assertTrue(self.step.validate_args())
-
-  def test_load_data(self):
-    self.assertTrue(self.step.load_data())
-
-  def test_save(self):
-    self.assertTrue(self.step.save())
-
-  def test_process(self):
+  def test_process_partition(self):
     with self.assertRaises(NotImplementedError):
-      self.step.process()
-
-  def test_run(self):
-    self.step.validate_args = MagicMock(return_value=True)
-    self.step.load_data = MagicMock(return_value=True)
-    self.step.process = MagicMock(return_value=True)
-    self.step.save = MagicMock(return_value=True)
-
-    self.step.run()
-
-    self.step.validate_args.assert_called_with()
-    self.step.load_data.assert_called_with()
-    self.step.process.assert_called_with()
-    self.step.save.assert_called_with()
-
-if __name__ == '__main__':
-    unittest.main()
+      self.cpu_parallel_step.process_partition((0,1), (0,2), (0,3))
