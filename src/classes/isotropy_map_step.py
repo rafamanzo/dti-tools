@@ -3,7 +3,7 @@ import os                     # File existence checking
 import nibabel as nib         # Lib for reading and writing Nifit1
 import numpy as np            # Nibabel is based on Numpy
 
-from classes.base.cpu_parallel_step import CPUParallelStep
+from src.classes.base.cpu_parallel_step import CPUParallelStep
 
 class IsotropyMapStep(CPUParallelStep):
   def validate_args(self):

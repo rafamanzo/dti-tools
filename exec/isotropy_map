@@ -19,7 +19,7 @@
 import sys
 sys.path.append(sys.path[0][:-4])
 
-from classes.isotropy_map_step import IsotropyMapStep
+from src.classes.isotropy_map_step import IsotropyMapStep
 
 IsotropyMapStep().run()
 

@@ -17,7 +17,7 @@
 from threading import Thread  # Makes possible to create threads
 import multiprocessing        # Useful on getting the processor count
 
-from classes.base.step import Step
+from src.classes.base.step import Step
 
 class CPUParallelStep(Step):
   def __start_worker(self, workers, workers_count, partition_size, extra_size):
