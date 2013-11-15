@@ -20,27 +20,30 @@ import multiprocessing        # Useful on getting the processor count
 from src.classes.base.step import Step
 
 class CPUParallelStep(Step):
-  def __start_worker(self, workers, workers_count, partition_size, extra_size):
-    i = len(workers) + 1
+  def __init__(self):
+    self.workers = []
+
+  def __start_worker(self, workers_count, partition_size, extra_size):
+    i = len(self.workers) + 1
 
     if i == workers_count:
-      workers.append(Thread(target=self.process_partition, args=(((i - 1)*partition_size, i*partition_size + extra_size), 
+      self.workers.append(Thread(target=self.process_partition, args=(((i - 1)*partition_size, i*partition_size + extra_size),
                                                             (0, self.shape[1]),
                                                             (0, self.shape[2]))
                            )
                     )
     else:
-      workers.append(Thread(target=self.process_partition, args=(((i - 1)*partition_size, i*partition_size), 
+      self.workers.append(Thread(target=self.process_partition, args=(((i - 1)*partition_size, i*partition_size),
                                                             (0, self.shape[1]),
                                                             (0, self.shape[2]))
                            )
                     )
 
-    workers[i-1].start()
+    self.workers[i-1].start()
 
-  def __join_workers(self, workers):
-    for i in range(0, len(workers)):
-      workers[i].join()
+  def __join_workers(self):
+    for i in range(0, len(self.workers)):
+      self.workers[i].join()
 
   def process_partition(self, x_range, y_range, z_range):
     raise NotImplementedError("Please implement this method")
@@ -49,9 +52,8 @@ class CPUParallelStep(Step):
     workers_count = multiprocessing.cpu_count()
     partition_size = int(self.shape[0]/workers_count)
     extra_size = self.shape[0]%workers_count
-    workers = []
 
     for i in range(1, workers_count+1):
-      self.__start_worker(workers, workers_count, partition_size,extra_size)
+      self.__start_worker(workers_count, partition_size,extra_size)
 
-    self.__join_workers(workers)
+    self.__join_workers()

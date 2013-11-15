@@ -18,9 +18,11 @@ import sys
 sys.path.append(sys.path[0][:-18])
 
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import Mock
 
 from src.classes.base.cpu_parallel_step import CPUParallelStep
+
+import multiprocessing # Necessary to get the same info as the class
 
 class CPUParallelStepTestCase(unittest.TestCase):
   def setUp(self):
@@ -29,3 +31,25 @@ class CPUParallelStepTestCase(unittest.TestCase):
   def test_process_partition(self):
     with self.assertRaises(NotImplementedError):
       self.cpu_parallel_step.process_partition((0,1), (0,2), (0,3))
+
+  def test_process(self):
+    workers_count = multiprocessing.cpu_count()
+    partition_size = int(128/workers_count)
+    extra_size = 128%workers_count
+    self.cpu_parallel_step.shape = (128,128,32,1)
+
+    self.cpu_parallel_step.process_partition = Mock(return_value=True)
+
+    self.cpu_parallel_step.process()
+
+    for i in range(workers_count+1,1):
+      if i == workers_count:
+        self.cpu_parallel_step.process_partition.assert_called_with(
+                                                            ((i - 1)*partition_size, i*partition_size + extra_size),
+                                                            (0, 128),
+                                                            (0, 32))
+      else:
+        self.cpu_parallel_step.process_partition.assert_called_with(
+                                                            ((i - 1)*partition_size, i*partition_size),
+                                                            (0, 128),
+                                                            (0, 32))
