@@ -17,17 +17,17 @@
 import sys
 sys.path.append(sys.path[0][:-9])
 
-print(sys.path[0][:-9])
-
 import unittest
 
 from src.tests.classes.base.step_test import StepTestCase
 from src.tests.classes.base.cpu_parallel_step_test import CPUParallelStepTestCase
+from src.tests.classes.isotropy_map_step_test import IsotropyMapStepTestCase
 
 class UnitTestsSuite(unittest.TestSuite):
   def __init__(self):
     self.addTest(StepTestCase())
     self.addTest(CPUParallelStepTestCase())
+    self.addTest(IsotropyMapStepTestCase())
 
 if __name__ == '__main__':
   unittest.main()

@@ -16,6 +16,7 @@ class IsotropyMapStep(CPUParallelStep):
     elif not os.path.isfile(str(sys.argv[2])):
       print('The given mask file does not exists:\n%s'%str(sys.argv[2]), file=sys.stderr)
       exit(1)
+    return True
 
   def load_data(self):
     self.tensor_data = nib.load(str(sys.argv[1])).get_data()

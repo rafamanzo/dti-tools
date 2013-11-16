@@ -28,7 +28,7 @@ class Step:
     raise NotImplementedError("Please implement this method")
 
   def run(self):
-    self.validate_args()
-    self.load_data()
-    self.process()
-    self.save()
+    if self.validate_args():
+      self.load_data()
+      self.process()
+      self.save()

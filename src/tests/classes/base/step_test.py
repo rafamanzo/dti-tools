@@ -52,5 +52,17 @@ class StepTestCase(unittest.TestCase):
     self.step.process.assert_called_with()
     self.step.save.assert_called_with()
 
+    self.step.validate_args = MagicMock(return_value=False)
+    self.step.load_data = MagicMock(return_value=True)
+    self.step.process = MagicMock(return_value=True)
+    self.step.save = MagicMock(return_value=True)
+
+    self.step.run()
+
+    self.step.validate_args.assert_called_with()
+    self.assertFalse(self.step.load_data.called)
+    self.assertFalse(self.step.process.called)
+    self.assertFalse(self.step.save.called)
+
 if __name__ == '__main__':
     unittest.main()
