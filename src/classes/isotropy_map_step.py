@@ -28,6 +28,13 @@ from src.classes.base.cpu_parallel_step import CPUParallelStep
 class IsotropyMapStep(CPUParallelStep):
     """Maps voxels with mean diffusivity lower then a given threshold"""
 
+    def __init__(self):
+        super(IsotropyMapStep, self).__init__()
+        self.threshold = 0.0
+        self.tensor_data = [[[[]]]]
+        self.mask_data = [[[[]]]]
+        self.isotropy_mask = [[[]]]
+
     def validate_args(self):
         if len(sys.argv) != 4:
             print('This program expects three arguments: tensor file;'+

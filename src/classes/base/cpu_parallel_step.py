@@ -71,7 +71,7 @@ class CPUParallelStep(Step):
         partition_size = int(self.shape[0]/workers_count)
         extra_size = self.shape[0] % workers_count
 
-        for i in range(1, workers_count+1):
+        for _ in range(1, workers_count+1):
             self.__start_worker(workers_count, partition_size, extra_size)
 
         self.__join_workers()
