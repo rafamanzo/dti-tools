@@ -16,6 +16,9 @@
 
 """Container for IsotropyMapStep class"""
 
+# disable complaints about Module 'numpy' has no 'zeros' member
+# pylint: disable-msg=E1101
+
 import sys                    # Makes possible to get the arguments
 import os                     # File existence checking
 import nibabel as nib         # Lib for reading and writing Nifit1
