@@ -15,20 +15,20 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 class Step:
-  def validate_args(self):
-    return True
+    def validate_args(self):
+        return True
 
-  def load_data(self):
-    return True
+    def load_data(self):
+        return True
 
-  def save(self):
-    return True
+    def save(self):
+        return True
 
-  def process(self):
-    raise NotImplementedError("Please implement this method")
+    def process(self):
+        raise NotImplementedError("Please implement this method")
 
-  def run(self):
-    if self.validate_args():
-      self.load_data()
-      self.process()
-      self.save()
+    def run(self):
+        if self.validate_args():
+            self.load_data()
+            self.process()
+            self.save()

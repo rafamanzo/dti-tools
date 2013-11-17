@@ -24,10 +24,10 @@ from src.tests.classes.base.cpu_parallel_step_test import CPUParallelStepTestCas
 from src.tests.classes.isotropy_map_step_test import IsotropyMapStepTestCase
 
 class UnitTestsSuite(unittest.TestSuite):
-  def __init__(self):
-    self.addTest(StepTestCase())
-    self.addTest(CPUParallelStepTestCase())
-    self.addTest(IsotropyMapStepTestCase())
+    def __init__(self):
+        self.addTest(StepTestCase())
+        self.addTest(CPUParallelStepTestCase())
+        self.addTest(IsotropyMapStepTestCase())
 
 if __name__ == '__main__':
-  unittest.main()
+    unittest.main()

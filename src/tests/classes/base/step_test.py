@@ -23,46 +23,43 @@ from unittest.mock import MagicMock
 from src.classes.base.step import Step
 
 class StepTestCase(unittest.TestCase):
-  def setUp(self):
-    self.step = Step()
+    def setUp(self):
+        self.step = Step()
 
-  def test_validate_args(self):
-    self.assertTrue(self.step.validate_args())
+    def test_validate_args(self):
+        self.assertTrue(self.step.validate_args())
 
-  def test_load_data(self):
-    self.assertTrue(self.step.load_data())
+    def test_load_data(self):
+        self.assertTrue(self.step.load_data())
 
-  def test_save(self):
-    self.assertTrue(self.step.save())
+    def test_save(self):
+        self.assertTrue(self.step.save())
 
-  def test_process(self):
-    with self.assertRaises(NotImplementedError):
-      self.step.process()
+    def test_process(self):
+        with self.assertRaises(NotImplementedError):
+            self.step.process()
 
-  def test_run(self):
-    self.step.validate_args = MagicMock(return_value=True)
-    self.step.load_data = MagicMock(return_value=True)
-    self.step.process = MagicMock(return_value=True)
-    self.step.save = MagicMock(return_value=True)
+    def test_run(self):
+        self.step.validate_args = MagicMock(return_value=True)
+        self.step.load_data = MagicMock(return_value=True)
+        self.step.process = MagicMock(return_value=True)
+        self.step.save = MagicMock(return_value=True)
 
-    self.step.run()
+        self.step.run()
 
-    self.step.validate_args.assert_called_with()
-    self.step.load_data.assert_called_with()
-    self.step.process.assert_called_with()
-    self.step.save.assert_called_with()
+        self.step.validate_args.assert_called_with()
+        self.step.load_data.assert_called_with()
+        self.step.process.assert_called_with()
+        self.step.save.assert_called_with()
 
-    self.step.validate_args = MagicMock(return_value=False)
-    self.step.load_data = MagicMock(return_value=True)
-    self.step.process = MagicMock(return_value=True)
-    self.step.save = MagicMock(return_value=True)
+        self.step.validate_args = MagicMock(return_value=False)
+        self.step.load_data = MagicMock(return_value=True)
+        self.step.process = MagicMock(return_value=True)
+        self.step.save = MagicMock(return_value=True)
 
-    self.step.run()
+        self.step.run()
 
-    self.step.validate_args.assert_called_with()
-    self.assertFalse(self.step.load_data.called)
-    self.assertFalse(self.step.process.called)
-    self.assertFalse(self.step.save.called)
-
-if __name__ == '__main__':
-    unittest.main()
+        self.step.validate_args.assert_called_with()
+        self.assertFalse(self.step.load_data.called)
+        self.assertFalse(self.step.process.called)
+        self.assertFalse(self.step.save.called)
