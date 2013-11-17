@@ -16,7 +16,7 @@
 
 """Container for the Step class"""
 
-class Step:
+class Step(object):
     """Abstract class that defines how a pipeline step should look like"""
 
     def validate_args(self):

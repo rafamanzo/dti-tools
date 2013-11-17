@@ -28,7 +28,7 @@ class CPUParallelStep(Step):
     """
     def __init__(self):
         self.workers = []
-        self.shape = (0,0,0,0)
+        self.shape = (0, 0, 0, 0)
 
     def __start_worker(self, workers_count, partition_size, extra_size):
         """Given a partition of the dataset, starts the thread to process it"""
@@ -69,9 +69,9 @@ class CPUParallelStep(Step):
     def process(self):
         workers_count = multiprocessing.cpu_count()
         partition_size = int(self.shape[0]/workers_count)
-        extra_size = self.shape[0]%workers_count
+        extra_size = self.shape[0] % workers_count
 
         for i in range(1, workers_count+1):
-            self.__start_worker(workers_count, partition_size,extra_size)
+            self.__start_worker(workers_count, partition_size, extra_size)
 
         self.__join_workers()

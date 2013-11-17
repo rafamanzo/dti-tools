@@ -17,7 +17,6 @@
 """Container for IsotropyMapStep class"""
 
 # disable complaints about Module 'numpy' has no 'zeros' member
-# pylint: disable-msg=E1101
 
 import sys                    # Makes possible to get the arguments
 import os                     # File existence checking
@@ -51,9 +50,10 @@ class IsotropyMapStep(CPUParallelStep):
         self.threshold = float(sys.argv[3])
         self.shape = mask.shape
         self.mask_data = mask.get_data()
-        self.isotropy_mask = np.zeros(self.shape, dtype=np.int16)
+        self.isotropy_mask = np.zeros(self.shape,    # pylint: disable-msg=E1101
+                                      dtype=np.int16)# pylint: disable-msg=E1101
 
-    def __mean_diffusivity(self,tensor):
+    def __mean_diffusivity(self, tensor):
         """Receives an six element array that represents the tensor matrix of
            a given voxel and returns it's mean diffusivity
 
@@ -62,14 +62,16 @@ class IsotropyMapStep(CPUParallelStep):
         return (tensor[0] + tensor[3] + tensor[5])/3
 
     def process_partition(self, x_range, y_range, z_range):
-        for x in range(x_range[0],x_range[1]):
-            for y in range(y_range[0],y_range[1]):
-                for z in range(z_range[0],z_range[1]):
+        for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
+            for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
+                for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
                     if self.mask_data[x][y][z]:
                         if (self.__mean_diffusivity(self.tensor_data[x][y][z])
                             <= self.threshold):
                             self.isotropy_mask[x][y][z] = 1
 
     def save(self):
-        isotropy_img = nib.Nifti1Image(self.isotropy_mask, np.eye(4))
+        isotropy_img = nib.Nifti1Image(
+                            self.isotropy_mask, # pylint: disable-msg=E1101
+                            np.eye(4))          # pylint: disable-msg=E1101
         isotropy_img.to_filename('isotropy_mask.nii.gz')
