@@ -25,6 +25,14 @@ import numpy as np            # Nibabel is based on Numpy
 
 from src.classes.base.cpu_parallel_step import CPUParallelStep
 
+def mean_diffusivity(tensor):
+    """Receives an six element array that represents the tensor matrix of
+       a given voxel and returns it's mean diffusivity
+
+    """
+    # The sum of the three eigenvalues is equal to the trace of the tensor
+    return (tensor[0] + tensor[3] + tensor[5])/3
+
 class IsotropyMapStep(CPUParallelStep):
     """Maps voxels with mean diffusivity lower then a given threshold"""
 
@@ -60,20 +68,12 @@ class IsotropyMapStep(CPUParallelStep):
         self.isotropy_mask = np.zeros(self.shape,    # pylint: disable-msg=E1101
                                       dtype=np.int16)# pylint: disable-msg=E1101
 
-    def __mean_diffusivity(self, tensor):
-        """Receives an six element array that represents the tensor matrix of
-           a given voxel and returns it's mean diffusivity
-
-        """
-        # The sum of the three eigenvalues is equal to the trace of the tensor
-        return (tensor[0] + tensor[3] + tensor[5])/3
-
     def process_partition(self, x_range, y_range, z_range):
         for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
             for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
                 for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
                     if self.mask_data[x][y][z]:
-                        if (self.__mean_diffusivity(self.tensor_data[x][y][z])
+                        if (mean_diffusivity(self.tensor_data[x][y][z])
                             <= self.threshold):
                             self.isotropy_mask[x][y][z] = 1
 

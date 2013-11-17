@@ -21,7 +21,7 @@ import multiprocessing        # Useful on getting the processor count
 
 from src.classes.base.step import Step
 
-class CPUParallelStep(Step):
+class CPUParallelStep(Step): # pylint: disable-msg=R0903
     """Abstract class to represent pipeline steps that can be
        parallelized on CPU
 
