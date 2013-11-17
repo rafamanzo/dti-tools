@@ -14,16 +14,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+"""Container for the CPUParallelStep class"""
+
 from threading import Thread  # Makes possible to create threads
 import multiprocessing        # Useful on getting the processor count
 
 from src.classes.base.step import Step
 
 class CPUParallelStep(Step):
+    """Abstract class to represent pipeline steps that can be
+       parallelized on CPU
+
+    """
     def __init__(self):
         self.workers = []
 
     def __start_worker(self, workers_count, partition_size, extra_size):
+        """Given a partition of the dataset, starts the thread to process it"""
         i = len(self.workers) + 1
 
         if i == workers_count:
@@ -47,10 +54,15 @@ class CPUParallelStep(Step):
         self.workers[i-1].start()
 
     def __join_workers(self):
+        """Barrier to make sure that all the threads have finished"""
         for i in range(0, len(self.workers)):
             self.workers[i].join()
 
     def process_partition(self, x_range, y_range, z_range):
+        """Unimplemented method that should contain
+           the logic for partition processing
+
+        """
         raise NotImplementedError("Please implement this method")
 
     def process(self):

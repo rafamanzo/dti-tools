@@ -14,20 +14,29 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+"""Container for the Step class"""
+
 class Step:
+    """Abstract class that defines how a pipeline step should look like"""
+
     def validate_args(self):
+        """Checks wether the given arguments are valid"""
         return True
 
     def load_data(self):
+        """Loads any data necessary during the step processing"""
         return True
 
     def save(self):
+        """Saves the results of the processing"""
         return True
 
     def process(self):
+        """Do the processing"""
         raise NotImplementedError("Please implement this method")
 
     def run(self):
+        """Calls all the other method on the proper order"""
         if self.validate_args():
             self.load_data()
             self.process()
