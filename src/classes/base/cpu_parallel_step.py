@@ -27,17 +27,22 @@ class CPUParallelStep(Step):
         i = len(self.workers) + 1
 
         if i == workers_count:
-            self.workers.append(Thread(target=self.process_partition, args=(((i - 1)*partition_size, i*partition_size + extra_size),
-                                                                (0, self.shape[1]),
-                                                                (0, self.shape[2]))
-                               )
-                        )
+            self.workers.append(
+                Thread(target=self.process_partition,
+                       args=(((i - 1)*partition_size,
+                               i*partition_size + extra_size),
+                             (0, self.shape[1]),
+                             (0, self.shape[2]))
+                )
+            )
         else:
-            self.workers.append(Thread(target=self.process_partition, args=(((i - 1)*partition_size, i*partition_size),
-                                                                (0, self.shape[1]),
-                                                                (0, self.shape[2]))
-                               )
-                        )
+            self.workers.append(
+                Thread(target=self.process_partition,
+                       args=(((i - 1)*partition_size, i*partition_size),
+                             (0, self.shape[1]),
+                             (0, self.shape[2]))
+                )
+            )
 
         self.workers[i-1].start()
 
