@@ -84,4 +84,4 @@ class IsotropyMapStepTestCase(unittest.TestCase):
 
         self.isotropy_map_step.process_partition((0,1),(0,1),(0,3))
 
-        self.assertEquals(self.isotropy_map_step.isotropy_mask, [[[0,1,0]]])
+        self.assertEqual(self.isotropy_map_step.isotropy_mask, [[[0,1,0]]])
