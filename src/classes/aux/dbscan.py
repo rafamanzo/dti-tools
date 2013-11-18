@@ -29,7 +29,7 @@ class DBSCAN(object):
         self.__min_pts = min_pts
         self.__mask = mask
         self.__shape = shape
-        self.__result = np.zeros(self.shape,    # pylint: disable-msg=E1101
+        self.__result = np.zeros(self.__shape,    # pylint: disable-msg=E1101
                                  dtype=np.int16)# pylint: disable-msg=E1101
 
     def __neighbourhood(self, point):
@@ -61,19 +61,19 @@ class DBSCAN(object):
 
     def fit(self):
         """For the given data, returns the clusters and result matrix"""
-        clusters = set()
+        clusters = []
         for x in range(0, self.__shape[0]):         # pylint: disable-msg=C0103,C0301
             for y in range(0, self.__shape[1]):     # pylint: disable-msg=C0103,C0301
                 for z in range(0, self.__shape[2]): # pylint: disable-msg=C0103,C0301
                     if self.__result[x][y][z] == 0:
                         neighbourhood = self.__neighbourhood((x, y, z))
-                        if len(neighbourhood) < self.__min_pts:
+                        if len(neighbourhood) < self.__min_pts or self.__mask[x][y][z] == 0:
                             self.__result[x][y][z] = -1
                         else:
                             cluster = set()
                             self.__expand_cluster((x, y, z),
                                                   neighbourhood,
                                                   cluster)
-                            clusters.add(cluster)
+                            clusters.append(cluster)
 
         return clusters, self.__result
