@@ -67,7 +67,8 @@ class DBSCAN(object):
                 for z in range(0, self.__shape[2]): # pylint: disable-msg=C0103,C0301
                     if self.__result[x][y][z] == 0:
                         neighbourhood = self.__neighbourhood((x, y, z))
-                        if len(neighbourhood) < self.__min_pts or self.__mask[x][y][z] == 0:
+                        if (len(neighbourhood) < self.__min_pts or
+                           self.__mask[x][y][z] == 0):
                             self.__result[x][y][z] = -1
                         else:
                             cluster = set()
