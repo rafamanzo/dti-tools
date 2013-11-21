@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""Container for IsotropyMapStep class"""
+"""Container for FilterMaskNoiseStep class"""
 
 # disable complaints about Module 'numpy' has no 'zeros' member
 
@@ -39,3 +39,32 @@ class FilterMaskNoiseStep(Step):
                   str(sys.argv[1]), file=sys.stderr)
             exit(1)
         return True
+
+    def load_data(self):
+        mask = nib.load(str(sys.argv[1]))
+        self.mask_data = nib.load(str(sys.argv[1])).get_data()
+        self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
+        self.eps = int(sys.argv[2])
+        self.min_pts = int(sys.argv[3])
+        self.filtered_mask = np.zeros(self.shape,    # pylint: disable-msg=E1101
+                                      dtype=np.uint8)# pylint: disable-msg=E1101
+
+    def process(self):
+        dbs = DBSCAN(self.eps, self.min_pts, self.mask_data, self.shape)
+        _, dbs_result = dbs.fit()
+        self.__convert_dbs_result_to_mask(dbs_result)
+
+    def save(self):
+        filtered_mask_img = nib.Nifti1Image(
+                                self.filtered_mask, # pylint: disable-msg=E1101
+                                np.eye(4))          # pylint: disable-msg=E1101
+        filtered_mask_img.to_filename('filtered_'+sys.argv[1].split('/')[-1])
+
+    def __convert_dbs_result_to_mask(self, dbs_result):
+        for x in range(0, self.shape[0]):
+            for y in range(0, self.shape[1]):
+                for z in range(0, self.shape[2]):
+                    if dbs_result[x][y][z] == 1:
+                        self.filtered_mask[x][y][z] = 1
+                    else:
+                        self.filtered_mask[x][y][z] = 0

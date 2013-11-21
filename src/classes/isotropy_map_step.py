@@ -63,10 +63,10 @@ class IsotropyMapStep(CPUParallelStep):
         self.tensor_data = nib.load(str(sys.argv[1])).get_data()
         mask = nib.load(str(sys.argv[2]))
         self.threshold = float(sys.argv[3])
-        self.shape = mask.shape
+        self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
         self.mask_data = mask.get_data()
         self.isotropy_mask = np.zeros(self.shape,    # pylint: disable-msg=E1101
-                                      dtype=np.int16)# pylint: disable-msg=E1101
+                                      dtype=np.uint8) # pylint: disable-msg=E1101
 
     def process_partition(self, x_range, y_range, z_range):
         for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301

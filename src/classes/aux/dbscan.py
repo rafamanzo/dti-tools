@@ -29,8 +29,8 @@ class DBSCAN(object):
         self.__min_pts = min_pts
         self.__mask = mask
         self.__shape = shape
-        self.__result = np.zeros(self.__shape,    # pylint: disable-msg=E1101
-                                 dtype=np.int16)# pylint: disable-msg=E1101
+        self.__result = np.zeros(self.__shape,  # pylint: disable-msg=E1101
+                                 dtype=np.int8) # pylint: disable-msg=E1101
 
     def __neighbourhood(self, point):
         """Receive a point and returns a set with it's neighbourhood"""
@@ -47,17 +47,25 @@ class DBSCAN(object):
 
         return neighbourhood
 
-    def __expand_cluster(self, point, neighbourhood, cluster):
-        """Creates a cluster based on a given point and it's neighbourhood"""
+    def __expand_neighbourhood(self, point, neighbourhood, cluster):
         for neighbour in neighbourhood:
-            if self.__result[neighbour[0]][neighbour[1]][neighbour[2]] == 0:
+            if self.__result[neighbour[0]][neighbour[1]][neighbour[2]] == 0 and self.__mask[neighbour[0]][neighbour[1]][neighbour[2]] == 1:
                 self.__result[neighbour[0]][neighbour[1]][neighbour[2]] = 1
                 cluster.add(neighbour)
                 neighbour_neighbourhood = self.__neighbourhood(neighbour)
                 if len(neighbour_neighbourhood) >= self.__min_pts:
                     neighbourhood.update(neighbour_neighbourhood)
-                    self.__expand_cluster(point, neighbourhood, cluster)
-                    break
+                    return True, (), neighbourhood, cluster
+        
+        return (False, (neighbour[0], neighbour[1], neighbour[2]), neighbourhood, cluster)
+
+    def __expand_cluster(self, point, neighbourhood, cluster):
+        """Creates a cluster based on a given point and it's neighbourhood"""
+        can_be_expanded = True
+        expand_point = point
+        
+        while can_be_expanded:
+            can_be_expanded, expand_point, neighbourhood, cluster = self.__expand_neighbourhood(expand_point, neighbourhood, cluster)
 
     def fit(self):
         """For the given data, returns the clusters and result matrix"""
