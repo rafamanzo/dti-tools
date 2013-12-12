@@ -1,0 +1,2 @@
+numpy==1.8.0
+nibabel==1.4.0dev
