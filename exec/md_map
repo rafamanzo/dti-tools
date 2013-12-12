@@ -19,8 +19,8 @@
 import sys
 sys.path.append(sys.path[0][:-4])
 
-from src.classes.isotropy_map_step import IsotropyMapStep
+from src.classes.md_threshold_map_step import MDThresholdMapStep
 
-IsotropyMapStep().run()
+MDThresholdMapStep().run()
 
 exit(0)

@@ -20,33 +20,33 @@ sys.path.append(sys.path[0][:-18])
 import unittest
 from unittest.mock import Mock
 
-from src.classes.isotropy_map_step import IsotropyMapStep
+from src.classes.md_threshold_map_step import MDThresholdMapStep
 
 import nibabel as nib # Necessary to mock the calls to it
 import numpy as np    # Necessary for assertions
 
-class IsotropyMapStepTestCase(unittest.TestCase):
+class MDThresholdMapStepTestCase(unittest.TestCase):
     def setUp(self):
-        self.isotropy_map_step = IsotropyMapStep()
+        self.md_threshold_map_step = MDThresholdMapStep()
 
     def test_validate_args(self):
         sys.argv = ['']
         with self.assertRaises(SystemExit) as cm:
-            self.isotropy_map_step.validate_args()
+            self.md_threshold_map_step.validate_args()
         self.assertEqual(cm.exception.code, 1)
 
         sys.argv = ['', 'not a file', 'not a file', '0.75']
         with self.assertRaises(SystemExit) as cm:
-            self.isotropy_map_step.validate_args()
+            self.md_threshold_map_step.validate_args()
         self.assertEqual(cm.exception.code, 1)
 
-        sys.argv[1] = sys.path[0]+"/classes/isotropy_map_step_test.py"
+        sys.argv[1] = sys.path[0]+"/classes/md_threshold_map_step_test.py"
         with self.assertRaises(SystemExit) as cm:
-            self.isotropy_map_step.validate_args()
+            self.md_threshold_map_step.validate_args()
         self.assertEqual(cm.exception.code, 1)
 
-        sys.argv[2] = sys.path[0]+"/classes/isotropy_map_step_test.py"
-        self.assertTrue(self.isotropy_map_step.validate_args())
+        sys.argv[2] = sys.path[0]+"/classes/md_threshold_map_step_test.py"
+        self.assertTrue(self.md_threshold_map_step.validate_args())
 
     def test_load_data(self):
         sys.argv = ['', 'data', 'mask', '0.75']
@@ -57,31 +57,31 @@ class IsotropyMapStepTestCase(unittest.TestCase):
         loaded.shape = (1,1,3)
         nib.load = Mock(return_value=loaded)
 
-        self.isotropy_map_step.load_data()
+        self.md_threshold_map_step.load_data()
 
         nib.load.assert_called_with('mask')
         loaded.get_data.assert_called_with()
 
     def test_save(self):
-        self.isotropy_map_step.isotropy_mask = [[[0,0,0]]]
+        self.md_threshold_map_step.md_mask = [[[0,0,0]]]
         mask = Mock(return_value=True)
         mask.to_filename = Mock(return_value=True)
         nib.Nifti1Image = Mock(return_value=mask)
 
-        self.isotropy_map_step.save()
+        self.md_threshold_map_step.save()
 
-        mask.to_filename.assert_called_with('isotropy_mask.nii.gz')
+        mask.to_filename.assert_called_with('md_mask.nii.gz')
 
     def test_process_partition(self):
-        self.isotropy_map_step.mask_data=[[[1,1,0]]]
-        self.isotropy_map_step.tensor_data = [[[
-                                                [1,1,1,1,1,1],
-                                                [0.1,0.1,0.1,0.1,0.1,0.1],
-                                                [1,1,1,1,1,1],
-                                             ]]]
-        self.isotropy_map_step.threshold = 0.5
-        self.isotropy_map_step.isotropy_mask = [[[0,0,0]]]
+        self.md_threshold_map_step.mask_data=[[[1,1,0]]]
+        self.md_threshold_map_step.tensor_data = [[[
+                                                    [1,1,1,1,1,1],
+                                                    [0.1,0.1,0.1,0.1,0.1,0.1],
+                                                    [1,1,1,1,1,1],
+                                                 ]]]
+        self.md_threshold_map_step.threshold = 0.5
+        self.md_threshold_map_step.md_mask = [[[0,0,0]]]
 
-        self.isotropy_map_step.process_partition((0,1),(0,1),(0,3))
+        self.md_threshold_map_step.process_partition((0,1),(0,1),(0,3))
 
-        self.assertEqual(self.isotropy_map_step.isotropy_mask, [[[0,1,0]]])
+        self.assertEqual(self.md_threshold_map_step.md_mask, [[[0,1,0]]])

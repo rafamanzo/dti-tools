@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""Container for IsotropyMapStep class"""
+"""Container for MDThresholdMapStep class"""
 
 # disable complaints about Module 'numpy' has no 'zeros' member
 
@@ -26,15 +26,15 @@ import numpy as np            # Nibabel is based on Numpy
 from src.classes.base.cpu_parallel_step import CPUParallelStep
 from src.classes.aux.tensor_statistics import TensorStatistics
 
-class IsotropyMapStep(CPUParallelStep):
+class MDThresholdMapStep(CPUParallelStep):
     """Maps voxels with mean diffusivity lower then a given threshold"""
 
     def __init__(self):
-        super(IsotropyMapStep, self).__init__()
+        super(MDThresholdMapStep, self).__init__()
         self.threshold = 0.0
         self.tensor_data = [[[[]]]]
         self.mask_data = [[[[]]]]
-        self.isotropy_mask = [[[]]]
+        self.md_mask = [[[]]]
 
     def validate_args(self):
         if len(sys.argv) != 4:
@@ -58,7 +58,7 @@ class IsotropyMapStep(CPUParallelStep):
         self.threshold = float(sys.argv[3])
         self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
         self.mask_data = mask.get_data()
-        self.isotropy_mask = np.zeros(self.shape,    # pylint: disable-msg=E1101
+        self.md_mask = np.zeros(self.shape,    # pylint: disable-msg=E1101
                                      dtype=np.uint8) # pylint: disable-msg=E1101
 
     def process_partition(self, x_range, y_range, z_range):
@@ -68,10 +68,10 @@ class IsotropyMapStep(CPUParallelStep):
                     if self.mask_data[x][y][z]:
                         if (TensorStatistics(self.tensor_data[x][y][z]).
                                 mean_diffusivity() <= self.threshold):
-                            self.isotropy_mask[x][y][z] = 1
+                            self.md_mask[x][y][z] = 1
 
     def save(self):
         isotropy_img = nib.Nifti1Image(
-                            self.isotropy_mask, # pylint: disable-msg=E1101
+                            self.md_mask, # pylint: disable-msg=E1101
                             np.eye(4))          # pylint: disable-msg=E1101
-        isotropy_img.to_filename('isotropy_mask.nii.gz')
+        isotropy_img.to_filename('md_mask.nii.gz')
