@@ -24,14 +24,7 @@ import nibabel as nib         # Lib for reading and writing Nifit1
 import numpy as np            # Nibabel is based on Numpy
 
 from src.classes.base.cpu_parallel_step import CPUParallelStep
-
-def mean_diffusivity(tensor):
-    """Receives an six element array that represents the tensor matrix of
-       a given voxel and returns it's mean diffusivity
-
-    """
-    # The sum of the three eigenvalues is equal to the trace of the tensor
-    return (tensor[0] + tensor[3] + tensor[5])/3
+from src.classes.aux.tensor_statistics import TensorStatistics
 
 class IsotropyMapStep(CPUParallelStep):
     """Maps voxels with mean diffusivity lower then a given threshold"""
@@ -73,8 +66,8 @@ class IsotropyMapStep(CPUParallelStep):
             for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
                 for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
                     if self.mask_data[x][y][z]:
-                        if (mean_diffusivity(self.tensor_data[x][y][z])
-                            <= self.threshold):
+                        if (TensorStatistics(self.tensor_data[x][y][z]).
+                                mean_diffusivity() <= self.threshold):
                             self.isotropy_mask[x][y][z] = 1
 
     def save(self):
