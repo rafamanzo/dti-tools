@@ -48,24 +48,31 @@ class DBSCAN(object):
         return neighbourhood
 
     def __expand_neighbourhood(self, point, neighbourhood, cluster):
+        """Expands a neighbourhood until it is not possible"""
+
+        neighbour = point
+
         for neighbour in neighbourhood:
-            if self.__result[neighbour[0]][neighbour[1]][neighbour[2]] == 0 and self.__mask[neighbour[0]][neighbour[1]][neighbour[2]] == 1:
+            if self.__result[neighbour[0]][neighbour[1]][neighbour[2]] == 0 and self.__mask[neighbour[0]][neighbour[1]][neighbour[2]] == 1: # pylint: disable-msg=C0301
                 self.__result[neighbour[0]][neighbour[1]][neighbour[2]] = 1
                 cluster.add(neighbour)
                 neighbour_neighbourhood = self.__neighbourhood(neighbour)
                 if len(neighbour_neighbourhood) >= self.__min_pts:
                     neighbourhood.update(neighbour_neighbourhood)
                     return True, (), neighbourhood, cluster
-        
-        return (False, (neighbour[0], neighbour[1], neighbour[2]), neighbourhood, cluster)
+
+        return (False,
+                (neighbour[0], neighbour[1], neighbour[2]),
+                neighbourhood,
+                cluster)
 
     def __expand_cluster(self, point, neighbourhood, cluster):
         """Creates a cluster based on a given point and it's neighbourhood"""
         can_be_expanded = True
         expand_point = point
-        
+
         while can_be_expanded:
-            can_be_expanded, expand_point, neighbourhood, cluster = self.__expand_neighbourhood(expand_point, neighbourhood, cluster)
+            can_be_expanded, expand_point, neighbourhood, cluster = self.__expand_neighbourhood(expand_point, neighbourhood, cluster)  # pylint: disable-msg=C0301
 
     def fit(self):
         """For the given data, returns the clusters and result matrix"""
