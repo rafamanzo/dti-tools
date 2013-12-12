@@ -24,10 +24,20 @@ import nibabel as nib         # Lib for reading and writing Nifit1
 import numpy as np            # Nibabel is based on Numpy
 
 from src.classes.base.step import Step    # Base class
-from src.classes.aux.dbscan import DBSCAN # Algorithm used for clustering 
+from src.classes.aux.dbscan import DBSCAN # Algorithm used for clustering
                                           #   and noise reduction
 
 class FilterMaskNoiseStep(Step):
+    """Applying the DBSCAN algorithm it elimates noise from a mask
+       and clusters it"""
+
+    def __init__(self):
+        self.min_pts = 0
+        self.eps = 0
+        self.mask_data = []
+        self.shape = (0)
+        self.filtered_mask = []
+
     def validate_args(self):
         if len(sys.argv) != 4:
             print('This program expects three arguments: mask file;'+
@@ -61,9 +71,11 @@ class FilterMaskNoiseStep(Step):
         filtered_mask_img.to_filename('filtered_'+sys.argv[1].split('/')[-1])
 
     def __convert_dbs_result_to_mask(self, dbs_result):
-        for x in range(0, self.shape[0]):
-            for y in range(0, self.shape[1]):
-                for z in range(0, self.shape[2]):
+        """Gets the result from DBSCAN and converts it into a mask"""
+
+        for x in range(0, self.shape[0]):          # pylint: disable-msg=C0103,C0301
+            for y in range(0, self.shape[1]):      # pylint: disable-msg=C0103,C0301
+                for z in range(0, self.shape[2]):  # pylint: disable-msg=C0103,C0301
                     if dbs_result[x][y][z] == 1:
                         self.filtered_mask[x][y][z] = 1
                     else:
