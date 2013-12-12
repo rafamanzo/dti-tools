@@ -22,6 +22,7 @@ import unittest
 from src.tests.classes.base.step_test import StepTestCase
 from src.tests.classes.base.cpu_parallel_step_test import CPUParallelStepTestCase
 from src.tests.classes.isotropy_map_step_test import IsotropyMapStepTestCase
+from src.tests.classes.filter_mask_noise_step_test import FilterMaskNoiseStepTestCase
 from src.tests.classes.aux.dbscan_test import DBSCANTestCase
 
 class UnitTestsSuite(unittest.TestSuite):
@@ -29,6 +30,7 @@ class UnitTestsSuite(unittest.TestSuite):
         self.addTest(StepTestCase())
         self.addTest(CPUParallelStepTestCase())
         self.addTest(IsotropyMapStepTestCase())
+        self.addTest(FilterMaskNoiseStepTestCase())
         self.addTest(DBSCANTestCase())
 
 if __name__ == '__main__':
