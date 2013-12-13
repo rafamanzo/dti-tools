@@ -16,6 +16,9 @@
 
 """Container for TensorStatistics class"""
 
+import numpy as np # Linear algebra
+import math as m   # Basic calculations
+
 # pylint: disable-msg=R0903,R0922
 
 class TensorStatistics(object):
@@ -32,3 +35,25 @@ class TensorStatistics(object):
         """
         # The sum of the three eigenvalues is equal to the trace of the tensor
         return (self.tensor[0] + self.tensor[3] + self.tensor[5])/3
+
+    def fractional_anisotropy(self):
+        """Tensor's fractional anisotropy (FA)"""
+        mean_diffusivity = self.mean_diffusivity()
+        eigenvalue, _ = np.linalg.eig(self.__tensor_matrix()) # pylint: disable-msg=E1101,C0301
+
+        numerator = m.sqrt(m.pow(eigenvalue[0] - mean_diffusivity, 2) +
+                           m.pow(eigenvalue[1] - mean_diffusivity, 2) +
+                           m.pow(eigenvalue[2] - mean_diffusivity, 2))
+        denominator = m.sqrt(m.pow(eigenvalue[0], 2) +
+                             m.pow(eigenvalue[1], 2) +
+                             m.pow(eigenvalue[2], 2))
+
+        return m.sqrt(3/2)*(numerator/denominator)
+
+    def __tensor_matrix(self):
+        """Returns the compact tensor array into it's full symetric matrix"""
+        return np.array([ # pylint: disable-msg=E1101
+                         [self.tensor[0], self.tensor[1], self.tensor[2]],
+                         [self.tensor[1], self.tensor[3], self.tensor[4]],
+                         [self.tensor[2], self.tensor[4], self.tensor[5]]
+                        ])

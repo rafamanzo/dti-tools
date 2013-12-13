@@ -21,8 +21,20 @@ import unittest
 
 from src.classes.aux.tensor_statistics import TensorStatistics
 
+import math as m # Float point assertions
+
 class TensorStatisticsTestCase(unittest.TestCase):
     def test_mean_diffusivity(self):
         tensor_statistics = TensorStatistics((1.0, 0.0, 0.0, 1.0, 0.0, 1.0))
 
         self.assertEqual(tensor_statistics.mean_diffusivity(), 1.0)
+
+    def test_fractional_anisotropy(self):
+        error = 0.000000000000001
+        tensor_statistics = TensorStatistics((1.0, 0.0, 0.0, 1.0, 0.0, 1.0))
+
+        self.assertTrue(m.fabs(tensor_statistics.fractional_anisotropy() - 0.0) <= error)
+
+        tensor_statistics = TensorStatistics((1.0, 0.0, 0.0, 0.0, 0.0, 0.0))
+
+        self.assertTrue(m.fabs(tensor_statistics.fractional_anisotropy() - 1.0) <= error)
