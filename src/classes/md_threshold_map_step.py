@@ -16,62 +16,15 @@
 
 """Container for MDThresholdMapStep class"""
 
-# disable complaints about Module 'numpy' has no 'zeros' member
-
-import sys                    # Makes possible to get the arguments
-import os                     # File existence checking
-import nibabel as nib         # Lib for reading and writing Nifit1
-import numpy as np            # Nibabel is based on Numpy
-
-from src.classes.base.cpu_parallel_step import CPUParallelStep
+from src.classes.base.threshold_map_step import ThresholdMapStep
 from src.classes.aux.tensor_statistics import TensorStatistics
 
-class MDThresholdMapStep(CPUParallelStep):
+class MDThresholdMapStep(ThresholdMapStep):
     """Maps voxels with mean diffusivity lower then a given threshold"""
 
     def __init__(self):
-        super(MDThresholdMapStep, self).__init__()
-        self.threshold = 0.0
-        self.tensor_data = [[[[]]]]
-        self.mask_data = [[[[]]]]
-        self.md_mask = [[[]]]
+        super(MDThresholdMapStep, self).__init__("md")
 
-    def validate_args(self):
-        if len(sys.argv) != 4:
-            print('This program expects three arguments: tensor file;'+
-                  ' mask file; and mean diffusivity threshold.',
-                  file=sys.stderr)
-            exit(1)
-        elif not os.path.isfile(str(sys.argv[1])):
-            print('The given tensor file does not exists:\n%s'%
-                  str(sys.argv[1]), file=sys.stderr)
-            exit(1)
-        elif not os.path.isfile(str(sys.argv[2])):
-            print('The given mask file does not exists:\n%s'%
-                  str(sys.argv[2]), file=sys.stderr)
-            exit(1)
-        return True
-
-    def load_data(self):
-        self.tensor_data = nib.load(str(sys.argv[1])).get_data()
-        mask = nib.load(str(sys.argv[2]))
-        self.threshold = float(sys.argv[3])
-        self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
-        self.mask_data = mask.get_data()
-        self.md_mask = np.zeros(self.shape,    # pylint: disable-msg=E1101
-                                     dtype=np.uint8) # pylint: disable-msg=E1101
-
-    def process_partition(self, x_range, y_range, z_range):
-        for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
-            for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
-                for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
-                    if self.mask_data[x][y][z]:
-                        if (TensorStatistics(self.tensor_data[x][y][z]).
-                                mean_diffusivity() <= self.threshold):
-                            self.md_mask[x][y][z] = 1
-
-    def save(self):
-        isotropy_img = nib.Nifti1Image(
-                            self.md_mask, # pylint: disable-msg=E1101
-                            np.eye(4))          # pylint: disable-msg=E1101
-        isotropy_img.to_filename('md_mask.nii.gz')
+    def check_for_threshold(self, tensor):
+        return (TensorStatistics(tensor).
+                    mean_diffusivity() <= self.threshold)
