@@ -1,3 +1,4 @@
 #!/bin/bash
 
-sudo easy_install coverage
+pip install -r requirements.txt --use-mirrors
+pip install coverage
