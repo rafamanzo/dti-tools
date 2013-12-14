@@ -23,6 +23,7 @@ from src.tests.classes.base.step_test import StepTestCase
 from src.tests.classes.base.cpu_parallel_step_test import CPUParallelStepTestCase
 from src.tests.classes.base.threshold_map_step_test import ThresholdMapStepTestCase
 from src.tests.classes.md_threshold_map_step_test import MDThresholdMapStepTestCase
+from src.tests.classes.fa_threshold_map_step_test import FAThresholdMapStepTestCase
 from src.tests.classes.filter_mask_noise_step_test import FilterMaskNoiseStepTestCase
 from src.tests.classes.aux.dbscan_test import DBSCANTestCase
 from src.tests.classes.aux.tensor_statistics_test import TensorStatisticsTestCase
@@ -32,6 +33,7 @@ class UnitTestsSuite(unittest.TestSuite):
         self.addTest(StepTestCase())
         self.addTest(CPUParallelStepTestCase())
         self.addTest(MDThresholdMapStepTestCase())
+        self.addTest(FAThresholdMapStepTestCase())
         self.addTest(FilterMaskNoiseStepTestCase())
         self.addTest(DBSCANTestCase())
         self.addTest(TensorStatisticsTestCase())

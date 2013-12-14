@@ -47,8 +47,10 @@ class TensorStatistics(object):
         denominator = m.sqrt(m.pow(eigenvalue[0], 2) +
                              m.pow(eigenvalue[1], 2) +
                              m.pow(eigenvalue[2], 2))
-
-        return m.sqrt(3/2)*(numerator/denominator)
+        if(denominator > 0):
+            return m.sqrt(3/2)*(numerator/denominator)
+        else:
+            return 0.0
 
     def __tensor_matrix(self):
         """Returns the compact tensor array into it's full symetric matrix"""
