@@ -25,7 +25,7 @@ from src.tests.classes.base.threshold_map_step_test import ThresholdMapStepTestC
 from src.tests.classes.md_threshold_map_step_test import MDThresholdMapStepTestCase
 from src.tests.classes.fa_threshold_map_step_test import FAThresholdMapStepTestCase
 from src.tests.classes.filter_mask_noise_step_test import FilterMaskNoiseStepTestCase
-from src.tests.classes.aux.dbscan_test import DBSCANTestCase
+from src.tests.classes.aux.clustering.dbscan_test import DBSCANTestCase
 from src.tests.classes.aux.tensor_statistics_test import TensorStatisticsTestCase
 
 class UnitTestsSuite(unittest.TestSuite):

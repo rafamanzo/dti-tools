@@ -38,3 +38,7 @@ class TensorStatisticsTestCase(unittest.TestCase):
         tensor_statistics = TensorStatistics((1.0, 0.0, 0.0, 0.0, 0.0, 0.0))
 
         self.assertTrue(m.fabs(tensor_statistics.fractional_anisotropy() - 1.0) <= error)
+
+        tensor_statistics = TensorStatistics((0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
+
+        self.assertTrue(m.fabs(tensor_statistics.fractional_anisotropy() - 0.0) <= error)

@@ -20,7 +20,7 @@ sys.path.append(sys.path[0][:-17])
 import unittest
 from unittest.mock import Mock
 
-from src.classes.aux.dbscan import DBSCAN
+from src.classes.aux.clustering.dbscan import DBSCAN
 
 import numpy as np    # Necessary for assertions
 

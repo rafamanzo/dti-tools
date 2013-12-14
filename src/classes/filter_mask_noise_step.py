@@ -23,9 +23,10 @@ import os                     # File existence checking
 import nibabel as nib         # Lib for reading and writing Nifit1
 import numpy as np            # Nibabel is based on Numpy
 
-from src.classes.base.step import Step    # Base class
-from src.classes.aux.dbscan import DBSCAN # Algorithm used for clustering
-                                          #   and noise reduction
+from src.classes.base.step import Step               # Base class
+from src.classes.aux.clustering.dbscan import DBSCAN # Algorithm used for
+                                                     #   clustering and noise
+                                                     #   reduction
 
 class FilterMaskNoiseStep(Step):
     """Applying the DBSCAN algorithm it elimates noise from a mask
