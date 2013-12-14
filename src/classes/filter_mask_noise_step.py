@@ -24,7 +24,7 @@ import nibabel as nib         # Lib for reading and writing Nifit1
 import numpy as np            # Nibabel is based on Numpy
 
 from src.classes.base.step import Step               # Base class
-from src.classes.aux.clustering.dbscan import DBSCAN # Algorithm used for
+from src.classes.aux.clustering.mask_dbscan import MaskDBSCAN # Algorithm used for pylint: disable-message=C0301
                                                      #   clustering and noise
                                                      #   reduction
 
@@ -61,7 +61,7 @@ class FilterMaskNoiseStep(Step):
                                       dtype=np.uint8)# pylint: disable-msg=E1101
 
     def process(self):
-        dbs = DBSCAN(self.eps, self.min_pts, self.mask_data, self.shape)
+        dbs = MaskDBSCAN(self.eps, self.min_pts, self.mask_data, self.shape)
         _, dbs_result = dbs.fit()
         self.__convert_dbs_result_to_mask(dbs_result)
 
