@@ -33,7 +33,7 @@ class DBSCANTestCase(unittest.TestCase):
 
     def test_neighbourhood_criteria(self):
         with self.assertRaises(NotImplementedError):
-            self.dbscan.neighbourhood_criteria((0,0,0))
+            self.dbscan.neighbourhood_criteria((0,0,0), (0,0,0))
 
     def test_fit(self):
         expected_clusters = [

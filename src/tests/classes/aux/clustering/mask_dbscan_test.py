@@ -31,4 +31,4 @@ class MaskDBSCANTestCase(unittest.TestCase):
         self.mask_dbscan = MaskDBSCAN(1,1,self.mask, self.shape)
 
     def test_neighbourhood_criteria(self):
-        self.assertTrue(self.mask_dbscan.neighbourhood_criteria((0,0,0)))
+        self.assertTrue(self.mask_dbscan.neighbourhood_criteria((0,0,0), (0,0,0)))

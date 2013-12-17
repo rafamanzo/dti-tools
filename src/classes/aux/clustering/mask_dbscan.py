@@ -26,5 +26,5 @@ class MaskDBSCAN(DBSCAN):
 
     """
 
-    def neighbourhood_criteria(self, point):
+    def neighbourhood_criteria(self, centroid, point):
         return True

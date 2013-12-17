@@ -32,8 +32,12 @@ class DBSCAN(object):
         self.__result = np.zeros(self.__shape,  # pylint: disable-msg=E1101
                                  dtype=np.int8) # pylint: disable-msg=E1101
 
-    def neighbourhood_criteria(self, point):
-        """Checks for wheter a givens point should be part of a beighbourhood"""
+    def neighbourhood_criteria(self, centroid, point):
+        """  Checks for wheter a givens point should be part of a beighbourhood
+
+             Notice that the implementation must get done in a way that when
+           centroid and point args are equal this must return true
+        """
         raise NotImplementedError("Please implement this method")
 
     def __neighbourhood(self, point):
@@ -47,7 +51,7 @@ class DBSCAN(object):
                 for z in range(max((point[2] - self.__eps, 0)),               # pylint: disable-msg=C0103,C0301
                                min(self.__shape[2], point[2] + self.__eps + 1)):
                     if (self.__mask[x][y][z] and
-                            self.neighbourhood_criteria((x, y, z))):
+                            self.neighbourhood_criteria(point, (x, y, z))):
                         neighbourhood.add((x, y, z))
 
         return neighbourhood
@@ -60,7 +64,8 @@ class DBSCAN(object):
         for neighbour in neighbourhood:
             if(self.__result[neighbour[0]][neighbour[1]][neighbour[2]] == 0 and
                self.__mask[neighbour[0]][neighbour[1]][neighbour[2]] == 1 and
-               self.neighbourhood_criteria((neighbour[0], neighbour[1], neighbour[2]))): # pylint: disable-msg=C0301
+               self.neighbourhood_criteria(point,
+                                           (neighbour[0], neighbour[1], neighbour[2]))): # pylint: disable-msg=C0301
                 self.__result[neighbour[0]][neighbour[1]][neighbour[2]] = 1
                 cluster.add(neighbour)
                 neighbour_neighbourhood = self.__neighbourhood(neighbour)
@@ -91,7 +96,7 @@ class DBSCAN(object):
                         neighbourhood = self.__neighbourhood((x, y, z))
                         if (len(neighbourhood) < self.__min_pts or
                            self.__mask[x][y][z] == 0 or
-                           not self.neighbourhood_criteria((x, y, z))):
+                           not self.neighbourhood_criteria((x, y, z), (x, y, z))): # pylint: disable-msg=C0301
                             self.__result[x][y][z] = -1
                         else:
                             cluster = set()

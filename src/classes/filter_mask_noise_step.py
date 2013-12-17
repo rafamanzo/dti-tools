@@ -24,7 +24,8 @@ import nibabel as nib         # Lib for reading and writing Nifit1
 import numpy as np            # Nibabel is based on Numpy
 
 from src.classes.base.step import Step               # Base class
-from src.classes.aux.clustering.mask_dbscan import MaskDBSCAN # Algorithm used for pylint: disable-message=C0301
+from src.classes.aux.clustering.mask_dbscan import MaskDBSCAN
+                                                     # Algorithm used for
                                                      #   clustering and noise
                                                      #   reduction
 
