@@ -35,6 +35,7 @@ class ThresholdMapStep(CPUParallelStep):
         self.tensor_data = [[[[]]]]
         self.mask_data = [[[[]]]]
         self.threshold_mask = [[[]]]
+        self.affine = np.eye(4)      # pylint: disable-msg=E1101
 
     def validate_args(self):
         if len(sys.argv) != 4:
@@ -53,7 +54,9 @@ class ThresholdMapStep(CPUParallelStep):
         return True
 
     def load_data(self):
-        self.tensor_data = nib.load(str(sys.argv[1])).get_data()
+        tensor = nib.load(str(sys.argv[1]))
+        self.tensor_data = tensor.get_data()
+        self.affine = tensor.get_affine()
         mask = nib.load(str(sys.argv[2]))
         self.threshold = float(sys.argv[3])
         self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
@@ -76,5 +79,5 @@ class ThresholdMapStep(CPUParallelStep):
     def save(self):
         isotropy_img = nib.Nifti1Image(
                             self.threshold_mask, # pylint: disable-msg=E1101
-                            np.eye(4))    # pylint: disable-msg=E1101
+                            self.affine)    # pylint: disable-msg=E1101
         isotropy_img.to_filename('%s_mask.nii.gz'%self.file_prefix)

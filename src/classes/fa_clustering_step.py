@@ -42,6 +42,8 @@ class FAClusteringStep(Step):
         self.shape = (0)
         self.clusters = []
         self.maximum_fa_difference = -1.0
+        self.tensor_data = [[[]]]
+        self.affine = np.eye(4) # pylint: disable-msg=E1101
 
     def validate_args(self):
         if len(sys.argv) != 6:
@@ -63,6 +65,7 @@ class FAClusteringStep(Step):
     def load_data(self):
         tensor = nib.load(str(sys.argv[1]))
         self.tensor_data = tensor.get_data()
+        self.affine = tensor.get_affine()
         mask = nib.load(str(sys.argv[2]))
         self.mask_data = mask.get_data()
         self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
@@ -71,7 +74,8 @@ class FAClusteringStep(Step):
         self.maximum_fa_difference = float(sys.argv[5])
 
     def process(self):
-        dbs = FADBSCAN(self.eps, self.min_pts, self.mask_data, self.shape, self.tensor_data, self.maximum_fa_difference)
+        dbs = FADBSCAN(self.eps, self.min_pts, self.mask_data, self.shape,
+                       self.tensor_data, self.maximum_fa_difference)
         self.clusters, _ = dbs.fit()
 
     def save(self):
@@ -79,16 +83,16 @@ class FAClusteringStep(Step):
         for cluster in self.clusters:
             filtered_mask_img = nib.Nifti1Image(
                                     self.__convert_cluster_to_mask(cluster),
-                                    np.eye(4))          # pylint: disable-msg=E1101
+                                    self.affine)
             filtered_mask_img.to_filename('fa_cluster_'+str(cluster_number)+'_'+
                                           sys.argv[1].split('/')[-1])
             cluster_number += 1
-            
+
 
     def __convert_cluster_to_mask(self, cluster):
         """Gets one cluster from DBSCAN and converts it into a mask"""
 
-        mask = np.zeros(self.shape, dtype=np.uint8)
+        mask = np.zeros(self.shape, dtype=np.uint8) # pylint: disable-msg=E1101
 
         for point in cluster:
             mask[point] = 1
