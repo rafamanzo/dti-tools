@@ -44,6 +44,7 @@ class FAClusteringStep(Step):
         self.maximum_fa_difference = -1.0
         self.tensor_data = [[[]]]
         self.affine = np.eye(4) # pylint: disable-msg=E1101
+        self.filtered_mask = []
 
     def validate_args(self):
         if len(sys.argv) != 6:
@@ -76,18 +77,24 @@ class FAClusteringStep(Step):
     def process(self):
         dbs = FADBSCAN(self.eps, self.min_pts, self.mask_data, self.shape,
                        self.tensor_data, self.maximum_fa_difference)
-        self.clusters, _ = dbs.fit()
+        self.clusters, self.filtered_mask = dbs.fit()
 
     def save(self):
         cluster_number = 0
         for cluster in self.clusters:
-            filtered_mask_img = nib.Nifti1Image(
+            cluster_img = nib.Nifti1Image(
                                     self.__convert_cluster_to_mask(cluster),
                                     self.affine)
-            filtered_mask_img.to_filename('fa_cluster_'+str(cluster_number)+'_'+
+            cluster_img.to_filename('fa_cluster_'+str(cluster_number)+'_'+
                                           sys.argv[1].split('/')[-1])
             cluster_number += 1
 
+        filtered_mask_img = nib.Nifti1Image(
+                                    self.filtered_mask,
+                                    self.affine)
+        filtered_mask_img.to_filename('fa_cluster_'+
+                                      'aggregated_'+
+                                      sys.argv[1].split('/')[-1])
 
     def __convert_cluster_to_mask(self, cluster):
         """Gets one cluster from DBSCAN and converts it into a mask"""
