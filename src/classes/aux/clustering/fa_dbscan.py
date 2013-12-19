@@ -35,8 +35,8 @@ class FADBSCAN(DBSCAN):
         self.__max_fa_difference = max_fa_difference
 
     def neighbourhood_criteria(self, centroid, point):
-        centroid_fa = TensorStatistics(self.__tensor[centroid[0]][centroid[1]][centroid[2]]).fractional_anisotropy() # pylint: disable-msg=C0301
-        point_fa = TensorStatistics(self.__tensor[point[0]][point[1]][point[2]]).fractional_anisotropy() # pylint: disable-msg=C0301
+        centroid_fa = TensorStatistics(self.__tensor[centroid]).fractional_anisotropy() # pylint: disable-msg=C0301
+        point_fa = TensorStatistics(self.__tensor[point]).fractional_anisotropy() # pylint: disable-msg=C0301
 
         if m.fabs(centroid_fa - point_fa) <= self.__max_fa_difference:
             return True

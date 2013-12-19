@@ -71,7 +71,7 @@ class DBSCAN(object):
                 neighbour_neighbourhood = self.__neighbourhood(neighbour)
                 if len(neighbour_neighbourhood) >= self.__min_pts:
                     neighbourhood.update(neighbour_neighbourhood)
-                    return True, (), neighbourhood, cluster
+                    return True, neighbour, neighbourhood, cluster
 
         return (False,
                 (neighbour[0], neighbour[1], neighbour[2]),
