@@ -37,8 +37,8 @@ class RegionStatisticsStep(CPUParallelStep):
         self.__mutex = Lock()
         self.__md_results = {}
         self.__fa_results = {}
-        self.__mask = [[[]]]
-        self.__tensor = [[[[]]]]
+        self.mask = [[[]]]
+        self.tensor = [[[[]]]]
         self.__affine = np.eye(4)
         self.shape = (0,0,0)
 
@@ -61,21 +61,21 @@ class RegionStatisticsStep(CPUParallelStep):
 
     def load_data(self):
         tensor = nib.load(str(sys.argv[1]))
-        self.__tensor = tensor.get_data()
+        self.tensor = tensor.get_data()
         self.__affine = tensor.get_affine()
         mask = nib.load(str(sys.argv[2]))
         self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
-        self.__mask = mask.get_data()
+        self.mask = mask.get_data()
 
     def __add_point_to_region(self, point):
-        region = self.__mask[point]
+        region = self.mask[point]
 
         if not region in self.__regions:
             self.__regions[region] = []
             self.__md_results[region] = []
             self.__fa_results[region] = []
 
-        tensor_statistics = TensorStatistics(self.__tensor[point])
+        tensor_statistics = TensorStatistics(self.tensor[point])
 
         self.__mutex.acquire()
 
@@ -89,7 +89,8 @@ class RegionStatisticsStep(CPUParallelStep):
         for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
             for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
                 for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
-                    if self.__mask[(x, y, z)] > 0:
+
+                    if self.mask[(x, y, z)] > 0:
                         self.__add_point_to_region((x, y, z))
 
     def save(self):
