@@ -83,7 +83,7 @@ class FAClusteringStep(Step):
                                     self.__convert_clusters_to_mask(),
                                     self.affine)
             cluster_img.to_filename('fa_clustered_'+
-                                          sys.argv[1].split('/')[-1])
+                                          sys.argv[2].split('/')[-1])
 
     def __convert_clusters_to_mask(self):
         """Gets clusters from DBSCAN and converts them into a mask"""
