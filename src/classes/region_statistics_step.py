@@ -23,6 +23,7 @@ import numpy as np            # Nibabel is based on Numpy
 from threading import Lock    # Mutual exclusion
 
 from src.classes.base.cpu_parallel_step import CPUParallelStep
+from src.classes.aux.tensor_statistics import TensorStatistics
 
 class RegionStatisticsStep(CPUParallelStep):
     """Calculates mean and standard deviation for many tensor metrics
@@ -33,12 +34,13 @@ class RegionStatisticsStep(CPUParallelStep):
     def __init__(self):
         super(RegionStatisticsStep, self).__init__()
         self.__regions = {}
-        self.__regions_mutex = Lock()
+        self.__mutex = Lock()
         self.__md_results = {}
         self.__fa_results = {}
         self.__mask = [[[]]]
         self.__tensor = [[[[]]]]
         self.__affine = np.eye(4)
+        self.shape = (0,0,0)
 
 
     def validate_args(self):
@@ -62,22 +64,45 @@ class RegionStatisticsStep(CPUParallelStep):
         self.__tensor = tensor.get_data()
         self.__affine = tensor.get_affine()
         mask = nib.load(str(sys.argv[2]))
-        self.threshold = float(sys.argv[3])
         self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
-        self.mask_data = mask.get_data()
-        self.threshold_mask = np.zeros(self.shape,  # pylint: disable-msg=E1101
-                                    dtype=np.uint8) # pylint: disable-msg=E1101
+        self.__mask = mask.get_data()
+
+    def __add_point_to_region(self, point):
+        region = self.__mask[point]
+
+        if not region in self.__regions:
+            self.__regions[region] = []
+            self.__md_results[region] = []
+            self.__fa_results[region] = []
+
+        tensor_statistics = TensorStatistics(self.__tensor[point])
+
+        self.__mutex.acquire()
+
+        self.__regions[region].append(point)
+        self.__md_results[region].append(tensor_statistics.mean_diffusivity())
+        self.__fa_results[region].append(tensor_statistics.fractional_anisotropy())
+        
+        self.__mutex.release()
 
     def process_partition(self, x_range, y_range, z_range):
         for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
             for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
                 for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
-                    continue #TODO
-
-    def process(self):
-        super(RegionStatisticsStep, self).process()
-        #TODO
+                    if self.__mask[(x, y, z)] > 0:
+                        self.__add_point_to_region((x, y, z))
 
     def save(self):
-        return True#TODO
-        
+        out = open('region_statistics.txt', 'w')
+
+        out.write('Region \t | # Voxels \t | MD mean \t | MD std \t | FA mean \t | FA std \t \n')
+
+        for region in self.__regions.keys():
+            values = (region,
+                      len(self.__regions[region]),
+                      np.mean(self.__md_results[region]),
+                      np.std(self.__md_results[region]),
+                      np.mean(self.__fa_results[region]),
+                      np.std(self.__fa_results[region]))
+
+            out.write("%d \t | %d \t | %.3f \t | %.3f \t | %.3f \t | %.3f \n"%values)
