@@ -72,12 +72,12 @@ class RegionStatisticsStep(CPUParallelStep):
         for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
             for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
                 for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
-                    #TODO
+                    continue #TODO
 
     def process(self):
         super(RegionStatisticsStep, self).process()
         #TODO
 
     def save(self):
-        #TODO
+        return True#TODO
         
