@@ -26,6 +26,7 @@ from src.tests.classes.aux.clustering.dbscan_test import DBSCANTestCase
 from src.tests.classes.aux.clustering.mask_dbscan_test import MaskDBSCANTestCase
 from src.tests.classes.aux.clustering.fa_dbscan_test import FADBSCANTestCase
 from src.tests.classes.aux.tensor_statistics_test import TensorStatisticsTestCase
+from src.tests.classes.aux.input_validators_test import InputValidatorsTestCase
 from src.tests.classes.md_threshold_map_step_test import MDThresholdMapStepTestCase
 from src.tests.classes.fa_threshold_map_step_test import FAThresholdMapStepTestCase
 from src.tests.classes.filter_mask_noise_step_test import FilterMaskNoiseStepTestCase
@@ -39,6 +40,7 @@ class UnitTestsSuite(unittest.TestSuite):
         self.addTest(DBSCANTestCase())
         self.addTest(FADBSCANTestCase())
         self.addTest(TensorStatisticsTestCase())
+        self.addTest(InputValidatorsTestCase())
         self.addTest(MaskDBSCANTestCase())
         self.addTest(MDThresholdMapStepTestCase())
         self.addTest(FAThresholdMapStepTestCase())

@@ -17,13 +17,13 @@
 """Container for RegionStatisticsStep class"""
 
 import sys                    # Makes possible to get the arguments
-import os                     # File existence checking
 import nibabel as nib         # Lib for reading and writing Nifit1
 import numpy as np            # Nibabel is based on Numpy
 from threading import Lock    # Mutual exclusion
 
 from src.classes.base.cpu_parallel_step import CPUParallelStep
 from src.classes.aux.tensor_statistics import TensorStatistics
+from src.classes.aux.input_validators import validate_tensor_and_mask
 
 class RegionStatisticsStep(CPUParallelStep):
     """Calculates mean and standard deviation for many tensor metrics
@@ -47,15 +47,8 @@ class RegionStatisticsStep(CPUParallelStep):
                   ' mask file.',
                   file=sys.stderr)
             exit(1)
-        elif not os.path.isfile(str(sys.argv[1])):
-            print('The given tensor file does not exists:\n%s'%
-                  str(sys.argv[1]), file=sys.stderr)
-            exit(1)
-        elif not os.path.isfile(str(sys.argv[2])):
-            print('The given mask file does not exists:\n%s'%
-                  str(sys.argv[2]), file=sys.stderr)
-            exit(1)
-        return True
+        return validate_tensor_and_mask(1, 2)
+
 
     def load_data(self):
         self.tensor = nib.load(str(sys.argv[1]))

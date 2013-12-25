@@ -35,12 +35,8 @@ class FilterMaskNoiseStepTestCase(unittest.TestCase):
             self.filter_mask_noise_step.validate_args()
         self.assertEqual(cm.exception.code, 1)
 
-        sys.argv = ['', 'not a file', '1', '26']
-        with self.assertRaises(SystemExit) as cm:
-            self.filter_mask_noise_step.validate_args()
-        self.assertEqual(cm.exception.code, 1)
-
-        sys.argv[1] = sys.path[0]+"/classes/filter_mask_noise_step_test.py"
+        sys.argv = ['', sys.path[0]+"/classes/filter_mask_noise_step_test.py", '1', '26']
+        
         self.assertTrue(self.filter_mask_noise_step.validate_args())
 
     def test_load_data(self):

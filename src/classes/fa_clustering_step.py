@@ -19,7 +19,6 @@
 # disable complaints about Module 'numpy' has no 'zeros' member
 
 import sys                    # Makes possible to get the arguments
-import os                     # File existence checking
 import nibabel as nib         # Lib for reading and writing Nifit1
 import numpy as np            # Nibabel is based on Numpy
 
@@ -28,6 +27,7 @@ from src.classes.aux.clustering.fa_dbscan import FADBSCAN
                                                      # Algorithm used for
                                                      #   clustering and noise
                                                      #   reduction
+from src.classes.aux.input_validators import validate_tensor, validate_mask
 
 class FAClusteringStep(Step):
     """Applying the DBSCAN algorithm it elimates clusters points
@@ -50,14 +50,9 @@ class FAClusteringStep(Step):
                   ' maximum FA difference',
                   file=sys.stderr)
             exit(1)
-        elif not os.path.isfile(str(sys.argv[1])):
-            print('The given tensor file does not exists:\n%s'%
-                  str(sys.argv[1]), file=sys.stderr)
-            exit(1)
-        elif not os.path.isfile(str(sys.argv[2])):
-            print('The given mask file does not exists:\n%s'%
-                  str(sys.argv[1]), file=sys.stderr)
-            exit(1)
+        validate_tensor(1)
+        validate_mask(2)
+
         return True
 
     def load_data(self):

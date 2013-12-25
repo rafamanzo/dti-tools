@@ -36,17 +36,7 @@ class FAClusteringStepTestCase(unittest.TestCase):
             self.fa_clustering_step.validate_args()
         self.assertEqual(cm.exception.code, 1)
 
-        sys.argv = ['', 'not a file', 'not a file', '1', '26', '0.1']
-        with self.assertRaises(SystemExit) as cm:
-            self.fa_clustering_step.validate_args()
-        self.assertEqual(cm.exception.code, 1)
-
-        sys.argv[1] = sys.path[0]+"/classes/fa_clustering_step_test.py"
-        with self.assertRaises(SystemExit) as cm:
-            self.fa_clustering_step.validate_args()
-        self.assertEqual(cm.exception.code, 1)
-
-        sys.argv[2] = sys.path[0]+"/classes/fa_clustering_step_test.py"
+        sys.argv = ['', sys.path[0]+"/classes/fa_clustering_step_test.py", sys.path[0]+"/classes/fa_clustering_step_test.py", '1', '26', '0.1']
         self.assertTrue(self.fa_clustering_step.validate_args())
 
     def test_load_data(self):

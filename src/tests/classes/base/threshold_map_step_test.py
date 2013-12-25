@@ -35,17 +35,8 @@ class ThresholdMapStepTestCase(unittest.TestCase):
             self.threshold_map_step.validate_args()
         self.assertEqual(cm.exception.code, 1)
 
-        sys.argv = ['', 'not a file', 'not a file', '0.75']
-        with self.assertRaises(SystemExit) as cm:
-            self.threshold_map_step.validate_args()
-        self.assertEqual(cm.exception.code, 1)
-
-        sys.argv[1] = sys.path[0]+"/classes/base/threshold_map_step_test.py"
-        with self.assertRaises(SystemExit) as cm:
-            self.threshold_map_step.validate_args()
-        self.assertEqual(cm.exception.code, 1)
-
-        sys.argv[2] = sys.path[0]+"/classes/base/threshold_map_step_test.py"
+        sys.argv = ['', sys.path[0]+"/classes/base/threshold_map_step_test.py", sys.path[0]+"/classes/base/threshold_map_step_test.py", '0.75']
+        
         self.assertTrue(self.threshold_map_step.validate_args())
 
     def test_load_data(self):

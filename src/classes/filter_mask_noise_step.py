@@ -19,7 +19,6 @@
 # disable complaints about Module 'numpy' has no 'zeros' member
 
 import sys                    # Makes possible to get the arguments
-import os                     # File existence checking
 import nibabel as nib         # Lib for reading and writing Nifit1
 import numpy as np            # Nibabel is based on Numpy
 
@@ -28,6 +27,7 @@ from src.classes.aux.clustering.mask_dbscan import MaskDBSCAN
                                                      # Algorithm used for
                                                      #   clustering and noise
                                                      #   reduction
+from src.classes.aux.input_validators import validate_mask
 
 class FilterMaskNoiseStep(Step):
     """Applying the DBSCAN algorithm it elimates noise from a mask
@@ -46,10 +46,7 @@ class FilterMaskNoiseStep(Step):
                   ' DBSCAN eps; and DBSCAN min_pts.',
                   file=sys.stderr)
             exit(1)
-        elif not os.path.isfile(str(sys.argv[1])):
-            print('The given mask file does not exists:\n%s'%
-                  str(sys.argv[1]), file=sys.stderr)
-            exit(1)
+        validate_mask(1)
         return True
 
     def load_data(self):
