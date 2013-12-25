@@ -30,7 +30,7 @@ class FADBSCAN(DBSCAN):
 
     """
 
-    def __init__(self, eps, min_pts, mask, shape, tensor, max_fa_difference):
+    def __init__(self, eps, min_pts, mask, shape, tensor, max_fa_difference): # pylint: disable-msg=R0913, C0301
         super(FADBSCAN, self).__init__(eps, min_pts, mask, shape)
         self.__tensor = tensor
         self.__max_fa_difference = max_fa_difference
@@ -46,6 +46,8 @@ class FADBSCAN(DBSCAN):
             return False
 
     def __get_fa(self, point):
+        """Gets the FA value for the tensor of a given point"""
+
         if self.__memoized_fa[point] < 0:
             self.__memoized_fa[point] = TensorStatistics(self.__tensor[point]).fractional_anisotropy() # pylint: disable-msg=C0301
 
