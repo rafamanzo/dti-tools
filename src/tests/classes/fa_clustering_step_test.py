@@ -52,25 +52,30 @@ class FAClusteringStepTestCase(unittest.TestCase):
     def test_load_data(self):
         sys.argv = ['', 'tensor', 'mask', '1', '26', '0.1']
 
-        data = [[[1.0,0.0,1.0]]]
         loaded = Mock(return_value=True)
-        loaded.get_data = Mock(return_value=data)
-        loaded.shape = (1,1,3)
         nib.load = Mock(return_value=loaded)
 
         self.fa_clustering_step.load_data()
 
         nib.load.assert_called_with('mask')
-        loaded.get_data.assert_called_with()
 
     def test_process(self):
-        self.fa_clustering_step.eps=1
-        self.fa_clustering_step.min_pts=0
-        self.fa_clustering_step.mask_data=[[[1,1,0]]]
-        self.fa_clustering_step.tensor = np.zeros((1,1,1,6), dtype=np.int16)
-        self.fa_clustering_step.tensor[0][0][0][0] = 1
+        mask_data = [[[1,1,0]]]
+        mask_shape = (1, 1, 3)
+        mask = Mock(return_value=True)
+        mask.get_data = Mock(return_value=mask_data)
+        mask.shape = mask_shape
+
+        tensor_data = np.zeros((1,1,1,6), dtype=np.int16)
+        tensor_data[0][0][0][0] = 1
+        tensor = Mock(return_value=True)
+        tensor.get_data = Mock(return_value=tensor_data)
+
+        self.fa_clustering_step.eps = 1
+        self.fa_clustering_step.min_pts = 0
+        self.fa_clustering_step.mask = mask
+        self.fa_clustering_step.tensor = tensor
         self.fa_clustering_step.max_fa_difference = 0.1
-        self.fa_clustering_step.shape=(1, 1, 3)
 
         FADBSCAN.fit = Mock(return_value=([[(0,1,0)]], [[[0,1,0]]]))
 
@@ -81,12 +86,18 @@ class FAClusteringStepTestCase(unittest.TestCase):
     def test_save(self):
         sys.argv = ['', 'tensor', 'mask', '1', '26', '0.1']
 
-        self.fa_clustering_step.shape=(1, 1, 3)
-        self.fa_clustering_step.clusters = [[(0,0,0)]]
+        mask_shape = (1, 1, 3)
         mask = Mock(return_value=True)
-        mask.to_filename = Mock(return_value=True)
-        nib.Nifti1Image = Mock(return_value=mask)
+        mask.shape = mask_shape
+        self.fa_clustering_step.mask = mask
+        tensor = Mock(return_value=True)
+        tensor.get_affine = Mock(return_value=np.eye(4))
+        self.fa_clustering_step.tensor = tensor
+        self.fa_clustering_step.clusters = [[(0,0,0)]]
+        mask_img = Mock(return_value=True)
+        mask_img.to_filename = Mock(return_value=True)
+        nib.Nifti1Image = Mock(return_value=mask_img)
 
         self.fa_clustering_step.save()
 
-        mask.to_filename.assert_called_with('fa_clustered_mask')
+        mask_img.to_filename.assert_called_with('fa_clustered_mask')
