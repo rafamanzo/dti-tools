@@ -33,15 +33,13 @@ class RegionStatisticsStep(CPUParallelStep):
 
     def __init__(self):
         super(RegionStatisticsStep, self).__init__()
-        self.regions = {}
         self.__mutex = Lock()
+        self.regions = {}
         self.md_results = {}
         self.fa_results = {}
-        self.mask = [[[]]]
-        self.tensor = [[[[]]]]
-        self.__affine = np.eye(4)
-        self.shape = (0,0,0)
-
+        self.mask = np.zeros((0, 0, 0))      # pylint: disable-msg=E1101
+        self.tensor = np.zeros((0, 0, 0, 0)) # pylint: disable-msg=E1101
+        self.shape = (0, 0, 0)
 
     def validate_args(self):
         if len(sys.argv) != 3:
@@ -60,49 +58,56 @@ class RegionStatisticsStep(CPUParallelStep):
         return True
 
     def load_data(self):
-        tensor = nib.load(str(sys.argv[1]))
-        self.tensor = tensor.get_data()
-        self.__affine = tensor.get_affine()
-        mask = nib.load(str(sys.argv[2]))
-        self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
-        self.mask = mask.get_data()
+        self.tensor = nib.load(str(sys.argv[1]))
+        self.mask = nib.load(str(sys.argv[2]))
+        self.shape = (self.mask.shape[0],
+                      self.mask.shape[1],
+                      self.mask.shape[2])
 
     def __add_point_to_region(self, point):
-        region = self.mask[point]
+        """Adds a point to it's corresponding region and
+                calculates it's statistics
+
+        """
+
+        region = self.mask.get_data()[point]
 
         if not region in self.regions:
             self.regions[region] = []
             self.md_results[region] = []
             self.fa_results[region] = []
 
-        tensor_statistics = TensorStatistics(self.tensor[point])
+        tensor_statistics = TensorStatistics(self.tensor.get_data()[point])
 
         self.__mutex.acquire()
 
         self.regions[region].append(point)
         self.md_results[region].append(tensor_statistics.mean_diffusivity())
-        self.fa_results[region].append(tensor_statistics.fractional_anisotropy())
-        
+        self.fa_results[region].append(
+            tensor_statistics.fractional_anisotropy())
+
         self.__mutex.release()
 
     def process_partition(self, x_range, y_range, z_range):
         for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
             for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
                 for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
-                    if self.mask[(x, y, z)] > 0:
+                    if self.mask.get_data()[(x, y, z)] > 0:
                         self.__add_point_to_region((x, y, z))
 
     def save(self):
         out = open('region_statistics.txt', 'w')
 
-        out.write('Region \t | # Voxels \t | MD mean \t | MD std \t | FA mean \t | FA std \t \n')
+        out.write('Region \t | # Voxels \t | MD mean \t |'+
+                  'MD std \t | FA mean \t | FA std \t \n')
 
         for region in self.regions.keys():
             values = (region,
                       len(self.regions[region]),
-                      np.mean(self.md_results[region]),
-                      np.std(self.md_results[region]),
-                      np.mean(self.fa_results[region]),
-                      np.std(self.fa_results[region]))
+                      np.mean(self.md_results[region]), # pylint: disable-msg=E1101,C0301
+                      np.std(self.md_results[region]),  # pylint: disable-msg=E1101,C0301
+                      np.mean(self.fa_results[region]), # pylint: disable-msg=E1101,C0301
+                      np.std(self.fa_results[region]))  # pylint: disable-msg=E1101,C0301
 
-            out.write("%d \t | %d \t | %.3f \t | %.3f \t | %.3f \t | %.3f \n"%values)
+            out.write(("%d \t | %d \t | %.3f \t |"+
+                      " %.3f \t | %.3f \t | %.3f \n")%values)

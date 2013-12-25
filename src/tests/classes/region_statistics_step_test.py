@@ -53,23 +53,27 @@ class RegionStatisticsStepTestCase(unittest.TestCase):
     def test_load_data(self):
         sys.argv = ['', 'tensor', 'mask']
 
-        data = [[[1.0,0.0,1.0]]]
         loaded = Mock(return_value=True)
-        loaded.get_data = Mock(return_value=data)
         loaded.shape = (1,1,3)
         nib.load = Mock(return_value=loaded)
 
         self.region_statistics_step.load_data()
 
         nib.load.assert_called_with('mask')
-        loaded.get_data.assert_called_with()
 
     def test_process_partition(self):
-        self.region_statistics_step.mask = np.zeros((1,1,3), dtype=np.uint64)
-        self.region_statistics_step.mask[(0,0,0)] = 1
-        self.region_statistics_step.mask[(0,0,1)] = 1
-        self.region_statistics_step.tensor = np.zeros((1,1,3,6), dtype=np.float64)
-        self.region_statistics_step.tensor[(0,0,0)] = (1.0,1.0,1.0,1.0,1.0,1.0)
+        mask = Mock(return_value=True)
+        mask_data = np.zeros((1,1,3), dtype=np.uint64)
+        mask_data[(0,0,1)] = 1
+        mask_data[(0,0,0)] = 1
+        mask.get_data = Mock(return_value=mask_data)
+        self.region_statistics_step.mask = mask
+
+        tensor = Mock(return_value=True)
+        tensor_data = np.zeros((1,1,3,6), dtype=np.float64)
+        tensor_data[(0,0,0)] = (1.0,1.0,1.0,1.0,1.0,1.0)
+        tensor.get_data = Mock(return_value=tensor_data)
+        self.region_statistics_step.tensor = tensor
 
         self.region_statistics_step.process_partition((0,1),(0,1),(0,3))
 
