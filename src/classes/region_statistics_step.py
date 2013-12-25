@@ -33,10 +33,10 @@ class RegionStatisticsStep(CPUParallelStep):
 
     def __init__(self):
         super(RegionStatisticsStep, self).__init__()
-        self.__regions = {}
+        self.regions = {}
         self.__mutex = Lock()
-        self.__md_results = {}
-        self.__fa_results = {}
+        self.md_results = {}
+        self.fa_results = {}
         self.mask = [[[]]]
         self.tensor = [[[[]]]]
         self.__affine = np.eye(4)
@@ -70,18 +70,18 @@ class RegionStatisticsStep(CPUParallelStep):
     def __add_point_to_region(self, point):
         region = self.mask[point]
 
-        if not region in self.__regions:
-            self.__regions[region] = []
-            self.__md_results[region] = []
-            self.__fa_results[region] = []
+        if not region in self.regions:
+            self.regions[region] = []
+            self.md_results[region] = []
+            self.fa_results[region] = []
 
         tensor_statistics = TensorStatistics(self.tensor[point])
 
         self.__mutex.acquire()
 
-        self.__regions[region].append(point)
-        self.__md_results[region].append(tensor_statistics.mean_diffusivity())
-        self.__fa_results[region].append(tensor_statistics.fractional_anisotropy())
+        self.regions[region].append(point)
+        self.md_results[region].append(tensor_statistics.mean_diffusivity())
+        self.fa_results[region].append(tensor_statistics.fractional_anisotropy())
         
         self.__mutex.release()
 
@@ -89,7 +89,6 @@ class RegionStatisticsStep(CPUParallelStep):
         for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
             for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
                 for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
-
                     if self.mask[(x, y, z)] > 0:
                         self.__add_point_to_region((x, y, z))
 
@@ -98,12 +97,12 @@ class RegionStatisticsStep(CPUParallelStep):
 
         out.write('Region \t | # Voxels \t | MD mean \t | MD std \t | FA mean \t | FA std \t \n')
 
-        for region in self.__regions.keys():
+        for region in self.regions.keys():
             values = (region,
-                      len(self.__regions[region]),
-                      np.mean(self.__md_results[region]),
-                      np.std(self.__md_results[region]),
-                      np.mean(self.__fa_results[region]),
-                      np.std(self.__fa_results[region]))
+                      len(self.regions[region]),
+                      np.mean(self.md_results[region]),
+                      np.std(self.md_results[region]),
+                      np.mean(self.fa_results[region]),
+                      np.std(self.fa_results[region]))
 
             out.write("%d \t | %d \t | %.3f \t | %.3f \t | %.3f \t | %.3f \n"%values)

@@ -19,6 +19,8 @@ sys.path.append(sys.path[0][:-18])
 
 import unittest
 from unittest.mock import Mock
+from unittest.mock import mock_open
+from unittest.mock import patch
 
 import nibabel as nib # Necessary to mock the calls to it
 import numpy as np
@@ -69,13 +71,16 @@ class RegionStatisticsStepTestCase(unittest.TestCase):
         self.region_statistics_step.tensor = np.zeros((1,1,3,6), dtype=np.float64)
         self.region_statistics_step.tensor[(0,0,0)] = (1.0,1.0,1.0,1.0,1.0,1.0)
 
-        #real_tensor_statistics = TensorStatistics((0,0,0,0,0,0))
-        #TensorStatistics.mean_diffusivity = Mock(return_value=0.8)
-        #TensorStatistics.fractional_anisotropy = Mock(return_value=0.8)
-
         self.region_statistics_step.process_partition((0,1),(0,1),(0,3))
 
-        #TensorStatistics.mean_diffusivity.assert_called_with()
-        #TensorStatistics.fractional_anisotropy.assert_called_with()
-        #TensorStatistics.mean_diffusivity = real_tensor_statistics.mean_diffusivity
-        #TensorStatistics.fractional_anisotropy = real_tensor_statistics.fractional_anisotropy
+    def test_save(self):
+        self.region_statistics_step.regions[1] = [(0,0,0)]
+        self.region_statistics_step.md_results[1] = [1.0]
+        self.region_statistics_step.fa_results[1] = [1.0]
+
+        open_mock = mock_open()
+
+        with patch('builtins.open', open_mock, create=True):
+            self.region_statistics_step.save()
+
+        open_mock.assert_called_with('region_statistics.txt', 'w')
