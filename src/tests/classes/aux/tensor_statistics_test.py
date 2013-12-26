@@ -42,3 +42,9 @@ class TensorStatisticsTestCase(unittest.TestCase):
         tensor_statistics = TensorStatistics((0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
 
         self.assertTrue(m.fabs(tensor_statistics.fractional_anisotropy() - 0.0) <= error)
+
+    def test_radial_diffusivity(self):
+        error = 0.000000000000001
+        tensor_statistics = TensorStatistics((3.0, 0.0, 0.0, 2.0, 0.0, 1.0))
+
+        self.assertTrue(m.fabs(tensor_statistics.radial_diffusivity() - 1.5) <= error)

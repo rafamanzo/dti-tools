@@ -52,6 +52,13 @@ class TensorStatistics(object):
         else:
             return 0.0
 
+    def radial_diffusivity(self):
+        """Tensor's radial diffusivity (RD)"""
+
+        eigenvalues, _ = self.__eigensystem()
+
+        return (eigenvalues[1] + eigenvalues[2]) / 2
+
     def __eigensystem(self):
         """Tensor's eigensystem ordered by eigenvalues"""
         eigenvalues, eigenevctors = np.linalg.eig(self.__tensor_matrix()) # pylint: disable-msg=E1101,C0301
