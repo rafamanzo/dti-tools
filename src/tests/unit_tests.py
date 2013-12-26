@@ -24,8 +24,9 @@ from src.tests.classes.base.cpu_parallel_step_test import CPUParallelStepTestCas
 from src.tests.classes.base.threshold_map_step_test import ThresholdMapStepTestCase
 from src.tests.classes.aux.clustering.dbscan_test import DBSCANTestCase
 from src.tests.classes.aux.clustering.mask_dbscan_test import MaskDBSCANTestCase
-from src.tests.classes.aux.clustering.fa_dbscan_test import FADBSCANTestCase
 from src.tests.classes.aux.clustering.tensor_statistics_dbscan_test import TensorStatisticsDBSCANTestCase
+from src.tests.classes.aux.clustering.fa_dbscan_test import FADBSCANTestCase
+from src.tests.classes.aux.clustering.rd_dbscan_test import RDDBSCANTestCase
 from src.tests.classes.aux.tensor_statistics_test import TensorStatisticsTestCase
 from src.tests.classes.aux.input_validators_test import InputValidatorsTestCase
 from src.tests.classes.md_threshold_map_step_test import MDThresholdMapStepTestCase
@@ -39,8 +40,9 @@ class UnitTestsSuite(unittest.TestSuite):
         self.addTest(StepTestCase())
         self.addTest(CPUParallelStepTestCase())
         self.addTest(DBSCANTestCase())
-        self.addTest(FADBSCANTestCase())
         self.addTest(TensorStatisticsDBSCANTestCase())
+        self.addTest(FADBSCANTestCase())
+        self.addTest(RDDBSCANTestCase())
         self.addTest(TensorStatisticsTestCase())
         self.addTest(InputValidatorsTestCase())
         self.addTest(MaskDBSCANTestCase())
