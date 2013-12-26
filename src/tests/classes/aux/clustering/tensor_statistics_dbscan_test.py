@@ -18,22 +18,29 @@ import sys
 sys.path.append(sys.path[0][:-17])
 
 import unittest
+from unittest.mock import Mock
 
-from src.classes.aux.clustering.fa_dbscan import FADBSCAN
+from src.classes.aux.clustering.tensor_statistics_dbscan import TensorStatisticsDBSCAN
 
 import numpy as np    # Necessary for assertions
 
-class FADBSCANTestCase(unittest.TestCase):
+class TensorStatisticsDBSCANTestCase(unittest.TestCase):
     def setUp(self):
         self.shape = (2,2,2)
         self.mask = np.ones(self.shape, dtype=np.int16)
         self.tensor = np.zeros((2,2,2,6), dtype=np.int16)
+        self.tensor[0][0][0][0] = 1
         self.mask[1][1][1] = 0
         self.max_value_difference = 0.1
-        self.tensor_statistics_dbscan = FADBSCAN(1,1,self.mask, self.shape, self.tensor, self.max_value_difference)
+        self.tensor_statistics_dbscan = TensorStatisticsDBSCAN(1,1,self.mask, self.shape, self.tensor, self.max_value_difference)
 
     def test_calculate_value(self):
-        error = 0.000000000000001
+        with self.assertRaises(NotImplementedError):
+            self.tensor_statistics_dbscan.calculate_value((0,0,0))
 
-        self.assertTrue((self.tensor_statistics_dbscan.calculate_value((0,0,0)) - 0.0) <= error)
-        
+    def test_neighbourhood_criteria(self):
+        self.tensor_statistics_dbscan.calculate_value = Mock(return_value=0.05)
+        self.assertTrue(self.tensor_statistics_dbscan.neighbourhood_criteria((0,0,0), (0,0,0)))
+
+        self.tensor_statistics_dbscan.calculate_value = Mock(return_value=0.2)
+        self.assertFalse(self.tensor_statistics_dbscan.neighbourhood_criteria((0,0,0), (1,0,0)))

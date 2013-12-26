@@ -16,39 +16,16 @@
 
 """Container for FADBSCAN class"""
 
-from src.classes.aux.clustering.dbscan import DBSCAN
+from src.classes.aux.clustering.tensor_statistics_dbscan import TensorStatisticsDBSCAN # pylint: disable-msg=C0301
 from src.classes.aux.tensor_statistics import TensorStatistics
-
-import math as m
-import numpy as np
 
 # pylint: disable-msg=R0903,R0922
 
-class FADBSCAN(DBSCAN):
+class FADBSCAN(TensorStatisticsDBSCAN):
     """Implementation of the DBSCAN clustering algorithm
        considering the FA difference between points
 
     """
 
-    def __init__(self, eps, min_pts, mask, shape, tensor, max_fa_difference): # pylint: disable-msg=R0913, C0301
-        super(FADBSCAN, self).__init__(eps, min_pts, mask, shape)
-        self.__tensor = tensor
-        self.__max_fa_difference = max_fa_difference
-        self.__memoized_fa = np.ones(shape, dtype=np.float16)*(-1)  # pylint: disable-msg=E1101,C0301
-
-    def neighbourhood_criteria(self, centroid, point):
-        centroid_fa = self.__get_fa(centroid)
-        point_fa = self.__get_fa(point)
-
-        if m.fabs(centroid_fa - point_fa) <= self.__max_fa_difference:
-            return True
-        else:
-            return False
-
-    def __get_fa(self, point):
-        """Gets the FA value for the tensor of a given point"""
-
-        if self.__memoized_fa[point] < 0:
-            self.__memoized_fa[point] = TensorStatistics(self.__tensor[point]).fractional_anisotropy() # pylint: disable-msg=C0301
-
-        return self.__memoized_fa[point]
+    def calculate_value(self, point):
+        return TensorStatistics(self.tensor[point]).fractional_anisotropy()
