@@ -34,6 +34,7 @@ from src.tests.classes.fa_threshold_map_step_test import FAThresholdMapStepTestC
 from src.tests.classes.filter_mask_noise_step_test import FilterMaskNoiseStepTestCase
 from src.tests.classes.tensor_statistics_clustering_step_test import TensorStatisticsClusteringStepTestCase
 from src.tests.classes.fa_clustering_step_test import FAClusteringStepTestCase
+from src.tests.classes.rd_clustering_step_test import RDClusteringStepTestCase
 from src.tests.classes.region_statistics_step_test import RegionStatisticsStepTestCase
 
 class UnitTestsSuite(unittest.TestSuite):
@@ -52,6 +53,7 @@ class UnitTestsSuite(unittest.TestSuite):
         self.addTest(FilterMaskNoiseStepTestCase())
         self.addTest(TensorStatisticsClusteringStepTestCase())
         self.addTest(FAClusteringStepTestCase())
+        self.addTest(RDClusteringStepTestCase())
         self.addTest(RegionStatisticsStepTestCase())
 
 if __name__ == '__main__':
