@@ -19,6 +19,7 @@ sys.path.append(sys.path[0][:-18])
 
 import unittest
 from unittest.mock import Mock
+from unittest.mock import patch
 
 from src.classes.fa_clustering_step import FAClusteringStep
 
@@ -30,26 +31,7 @@ class FAClusteringStepTestCase(unittest.TestCase):
     def setUp(self):
         self.fa_clustering_step = FAClusteringStep()
 
-    def test_validate_args(self):
-        sys.argv = ['']
-        with self.assertRaises(SystemExit) as cm:
-            self.fa_clustering_step.validate_args()
-        self.assertEqual(cm.exception.code, 1)
-
-        sys.argv = ['', sys.path[0]+"/classes/fa_clustering_step_test.py", sys.path[0]+"/classes/fa_clustering_step_test.py", '1', '26', '0.1']
-        self.assertTrue(self.fa_clustering_step.validate_args())
-
-    def test_load_data(self):
-        sys.argv = ['', 'tensor', 'mask', '1', '26', '0.1']
-
-        loaded = Mock(return_value=True)
-        nib.load = Mock(return_value=loaded)
-
-        self.fa_clustering_step.load_data()
-
-        nib.load.assert_called_with('mask')
-
-    def test_process(self):
+    def test_get_cluster(self):
         mask_data = [[[1,1,0]]]
         mask_shape = (1, 1, 3)
         mask = Mock(return_value=True)
@@ -67,27 +49,7 @@ class FAClusteringStepTestCase(unittest.TestCase):
         self.fa_clustering_step.tensor = tensor
         self.fa_clustering_step.max_fa_difference = 0.1
 
-        FADBSCAN.fit = Mock(return_value=([[(0,1,0)]], [[[0,1,0]]]))
+        fa_dbscan_mock = Mock()
 
-        self.fa_clustering_step.process()
-
-        FADBSCAN.fit.assert_called_with()
-
-    def test_save(self):
-        sys.argv = ['', 'tensor', 'mask', '1', '26', '0.1']
-
-        mask_shape = (1, 1, 3)
-        mask = Mock(return_value=True)
-        mask.shape = mask_shape
-        self.fa_clustering_step.mask = mask
-        tensor = Mock(return_value=True)
-        tensor.get_affine = Mock(return_value=np.eye(4))
-        self.fa_clustering_step.tensor = tensor
-        self.fa_clustering_step.clusters = [[(0,0,0)]]
-        mask_img = Mock(return_value=True)
-        mask_img.to_filename = Mock(return_value=True)
-        nib.Nifti1Image = Mock(return_value=mask_img)
-
-        self.fa_clustering_step.save()
-
-        mask_img.to_filename.assert_called_with('fa_clustered_mask')
+        with patch('__main__.FADBSCAN', fa_dbscan_mock, create=True):
+            self.fa_clustering_step.get_clusterer()
