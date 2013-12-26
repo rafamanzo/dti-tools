@@ -30,6 +30,9 @@ class FAClusteringStep(TensorStatisticsClusteringStep):
 
     """
 
+    def __init__(self):
+        super(FAClusteringStep, self).__init__("fa")
+
     def get_clusterer(self):
         return FADBSCAN(self.eps, self.min_pts, self.mask.get_data(),
                        self.shape(), self.tensor.get_data(),

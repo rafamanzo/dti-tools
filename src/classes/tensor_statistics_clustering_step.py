@@ -31,13 +31,14 @@ class TensorStatisticsClusteringStep(Step):
 
     """
 
-    def __init__(self):
+    def __init__(self, filename_prefix):
         self.min_pts = 0
         self.eps = 0
         self.mask = np.zeros((0)) # pylint: disable-msg=E1101
         self.clusters = []
         self.maximum_fa_difference = -1.0
         self.tensor = np.zeros((0, 0, 0)) # pylint: disable-msg=E1101
+        self.filename_prefix = filename_prefix
 
     def validate_args(self):
         if len(sys.argv) != 6:
@@ -70,7 +71,7 @@ class TensorStatisticsClusteringStep(Step):
         cluster_img = nib.Nifti1Image(
                                 self.__convert_clusters_to_mask(),
                                 self.__affine())
-        cluster_img.to_filename('clustered_'+
+        cluster_img.to_filename(self.filename_prefix+'_clustered_'+
                                       sys.argv[2].split('/')[-1])
 
     def __affine(self):

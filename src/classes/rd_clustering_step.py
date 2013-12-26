@@ -30,6 +30,9 @@ class RDClusteringStep(TensorStatisticsClusteringStep):
 
     """
 
+    def __init__(self):
+        super(RDClusteringStep, self).__init__("rd")
+
     def get_clusterer(self):
         return RDDBSCAN(self.eps, self.min_pts, self.mask.get_data(),
                        self.shape(), self.tensor.get_data(),

@@ -27,7 +27,7 @@ import numpy as np
 
 class TensorStatisticsClusteringStepTestCase(unittest.TestCase):
     def setUp(self):
-        self.tensor_statistics_clustering_step = TensorStatisticsClusteringStep()
+        self.tensor_statistics_clustering_step = TensorStatisticsClusteringStep("tt")
 
     def test_validate_args(self):
         sys.argv = ['']
@@ -78,4 +78,4 @@ class TensorStatisticsClusteringStepTestCase(unittest.TestCase):
 
         self.tensor_statistics_clustering_step.save()
 
-        mask_img.to_filename.assert_called_with('clustered_mask')
+        mask_img.to_filename.assert_called_with('tt_clustered_mask')
