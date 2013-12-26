@@ -39,7 +39,7 @@ class TensorStatistics(object):
     def fractional_anisotropy(self):
         """Tensor's fractional anisotropy (FA)"""
         mean_diffusivity = self.mean_diffusivity()
-        eigenvalue, _ = np.linalg.eig(self.__tensor_matrix()) # pylint: disable-msg=E1101,C0301
+        eigenvalue, _ = self.__eigensystem()
 
         numerator = m.sqrt(m.pow(eigenvalue[0] - mean_diffusivity, 2) +
                            m.pow(eigenvalue[1] - mean_diffusivity, 2) +
@@ -51,6 +51,15 @@ class TensorStatistics(object):
             return m.sqrt(3/2)*(numerator/denominator)
         else:
             return 0.0
+
+    def __eigensystem(self):
+        """Tensor's eigensystem ordered by eigenvalues"""
+        eigenvalues, eigenevctors = np.linalg.eig(self.__tensor_matrix()) # pylint: disable-msg=E1101,C0301
+
+        # descendat order
+        ordered_indexes = list(reversed(eigenvalues.argsort()))
+
+        return eigenvalues[ordered_indexes], eigenevctors[:, ordered_indexes]
 
     def __tensor_matrix(self):
         """Returns the compact tensor array into it's full symetric matrix"""
