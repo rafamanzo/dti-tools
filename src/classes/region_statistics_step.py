@@ -102,5 +102,5 @@ class RegionStatisticsStep(CPUParallelStep):
                       np.mean(self.fa_results[region]), # pylint: disable-msg=E1101,C0301
                       np.std(self.fa_results[region]))  # pylint: disable-msg=E1101,C0301
 
-            out.write(("%d \t | %d \t | %.3f \t |"+
-                      " %.3f \t | %.3f \t | %.3f \n")%values)
+            out.write(("%5d \t | %8d \t | %6.3f \t |"+
+                      " %5.3f \t | %6.3f \t | %5.3f \n")%values)
