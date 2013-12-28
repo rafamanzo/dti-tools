@@ -56,9 +56,10 @@ class DBSCANTestCase(unittest.TestCase):
         self.mask[0][0][0] = 1
         self.mask[0][0][1] = 1
         self.mask[0][0][2] = 1
+        self.mask[2][2][2] = 1
         self.dbscan = DBSCAN(1,3,self.mask, self.shape)
         self.dbscan.neighbourhood_criteria = Mock(return_value=True)
-        expected_clusters = [{(0, 0, 1), (0, 0, 2)}]
+        expected_clusters = []
         expected_result_matrix = np.ones(self.shape, dtype=np.int16)
         expected_result_matrix = expected_result_matrix*-1
         expected_result_matrix[0][0][1] = 1
