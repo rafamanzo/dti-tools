@@ -86,6 +86,12 @@ class DBSCAN(object):
         while can_be_expanded:
             can_be_expanded, expand_point, neighbourhood, cluster = self.__expand_neighbourhood(expand_point, neighbourhood, cluster)  # pylint: disable-msg=C0301
 
+    def __discard_cluster(self, centroid, cluster):
+        for point in cluster:
+            self.__result[point] = 0
+        self.__result[centroid] = -1
+
+
     def fit(self):
         """For the given data, returns the clusters and result matrix"""
         clusters = []
@@ -103,6 +109,9 @@ class DBSCAN(object):
                             self.__expand_cluster((x, y, z),
                                                   neighbourhood,
                                                   cluster)
-                            clusters.append(cluster)
+                            if len(cluster) >= self.__min_pts:
+                                clusters.append(cluster)
+                            else:
+                                self.__discard_cluster((x, y, z), cluster)
 
         return clusters, self.__result
