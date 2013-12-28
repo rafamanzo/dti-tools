@@ -59,6 +59,16 @@ class TensorStatistics(object):
 
         return (eigenvalues[1] + eigenvalues[2]) / 2
 
+    def toroidal_volume(self):
+        """Tensor's toroidal volume (TV)"""
+
+        eigenvalues, _ = self.__eigensystem()
+
+        return ((m.pi / 3.0) *
+                    eigenvalues[0] *
+                    ((eigenvalues[1] * eigenvalues[2]) +
+                        (m.pow(eigenvalues[2], 2) / 2.0)))
+
     def __eigensystem(self):
         """Tensor's eigensystem ordered by eigenvalues"""
         eigenvalues, eigenevctors = np.linalg.eig(self.__tensor_matrix()) # pylint: disable-msg=E1101,C0301

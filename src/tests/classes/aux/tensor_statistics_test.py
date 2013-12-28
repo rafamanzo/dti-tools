@@ -48,3 +48,9 @@ class TensorStatisticsTestCase(unittest.TestCase):
         tensor_statistics = TensorStatistics((3.0, 0.0, 0.0, 2.0, 0.0, 1.0))
 
         self.assertTrue(m.fabs(tensor_statistics.radial_diffusivity() - 1.5) <= error)
+
+    def test_toroidal_volume(self):
+        error = 0.000000000000001
+        tensor_statistics = TensorStatistics((1.0, 0.0, 0.0, 1.0, 0.0, 1.0))
+
+        self.assertTrue(m.fabs(tensor_statistics.toroidal_volume() - ((3.0*m.pi)/6.0)) <= error)

@@ -72,6 +72,7 @@ class RegionStatisticsStepTestCase(unittest.TestCase):
         self.region_statistics_step.md_results[1] = [1.0]
         self.region_statistics_step.fa_results[1] = [1.0]
         self.region_statistics_step.rd_results[1] = [1.0]
+        self.region_statistics_step.tv_results[1] = [1.0]
 
         open_mock = mock_open()
 
