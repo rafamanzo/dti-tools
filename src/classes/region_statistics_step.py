@@ -116,5 +116,5 @@ class RegionStatisticsStep(CPUParallelStep):
                       np.std(self.tv_results[region]))  # pylint: disable-msg=E1101,C0301
 
             out.write(("%5d \t | %8d \t | %6.3f \t |"+
-                      " %5.3f \t | %6.3f \t | %5.3f \t|"+
-                      " %6.3f \t | %5.3f \t | %6.3f \t | %5.3f \t \n")%values)
+                      " %5.3f \t | %6.3f \t | %6.3f \t |"+
+                      " %6.3f \t | %6.3f \t | %6.3f \t | %5.3f \t \n")%values)
