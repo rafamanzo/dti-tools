@@ -87,6 +87,7 @@ class DBSCAN(object):
             can_be_expanded, expand_point, neighbourhood, cluster = self.__expand_neighbourhood(expand_point, neighbourhood, cluster)  # pylint: disable-msg=C0301
 
     def __discard_cluster(self, centroid, cluster):
+        """Desconsider a given cluster and mark it's centroid as noise"""
         for point in cluster:
             self.__result[point] = 0
         self.__result[centroid] = -1
