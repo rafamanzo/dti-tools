@@ -97,7 +97,8 @@ class RegionStatisticsStep(CPUParallelStep):
                         self.__add_point_to_region((x, y, z))
 
     def save(self):
-        out = open('region_statistics.txt', 'w')
+        out = open('%s_statistics.txt' %
+                   (sys.argv[2].split('/')[-1].split('.')[0]), 'w')
 
         out.write('Region \t | # Voxels \t | MD mean \t |'+
                   'MD std \t | FA mean \t | FA std \t |'+

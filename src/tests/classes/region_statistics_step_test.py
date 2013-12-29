@@ -79,4 +79,4 @@ class RegionStatisticsStepTestCase(unittest.TestCase):
         with patch('builtins.open', open_mock, create=True):
             self.region_statistics_step.save()
 
-        open_mock.assert_called_with('region_statistics.txt', 'w')
+        open_mock.assert_called_with('mask_statistics.txt', 'w')
