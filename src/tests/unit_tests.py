@@ -27,6 +27,7 @@ from src.tests.classes.aux.clustering.mask_dbscan_test import MaskDBSCANTestCase
 from src.tests.classes.aux.clustering.tensor_statistics_dbscan_test import TensorStatisticsDBSCANTestCase
 from src.tests.classes.aux.clustering.fa_dbscan_test import FADBSCANTestCase
 from src.tests.classes.aux.clustering.rd_dbscan_test import RDDBSCANTestCase
+from src.tests.classes.aux.clustering.tv_dbscan_test import TVDBSCANTestCase
 from src.tests.classes.aux.tensor_statistics_test import TensorStatisticsTestCase
 from src.tests.classes.aux.input_validators_test import InputValidatorsTestCase
 from src.tests.classes.md_threshold_map_step_test import MDThresholdMapStepTestCase
@@ -35,6 +36,7 @@ from src.tests.classes.filter_mask_noise_step_test import FilterMaskNoiseStepTes
 from src.tests.classes.tensor_statistics_clustering_step_test import TensorStatisticsClusteringStepTestCase
 from src.tests.classes.fa_clustering_step_test import FAClusteringStepTestCase
 from src.tests.classes.rd_clustering_step_test import RDClusteringStepTestCase
+from src.tests.classes.tv_clustering_step_test import TVClusteringStepTestCase
 from src.tests.classes.region_statistics_step_test import RegionStatisticsStepTestCase
 
 class UnitTestsSuite(unittest.TestSuite):
@@ -45,6 +47,7 @@ class UnitTestsSuite(unittest.TestSuite):
         self.addTest(TensorStatisticsDBSCANTestCase())
         self.addTest(FADBSCANTestCase())
         self.addTest(RDDBSCANTestCase())
+        self.addTest(TVDBSCANTestCase())
         self.addTest(TensorStatisticsTestCase())
         self.addTest(InputValidatorsTestCase())
         self.addTest(MaskDBSCANTestCase())
@@ -54,6 +57,7 @@ class UnitTestsSuite(unittest.TestSuite):
         self.addTest(TensorStatisticsClusteringStepTestCase())
         self.addTest(FAClusteringStepTestCase())
         self.addTest(RDClusteringStepTestCase())
+        self.addTest(TVClusteringStepTestCase())
         self.addTest(RegionStatisticsStepTestCase())
 
 if __name__ == '__main__':

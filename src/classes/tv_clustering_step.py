@@ -18,22 +18,22 @@
 
 # disable complaints about Module 'numpy' has no 'zeros' member
 
-from src.classes.aux.clustering.rd_dbscan import RDDBSCAN
+from src.classes.aux.clustering.tv_dbscan import TVDBSCAN
                                                      # Algorithm used for
                                                      #   clustering and noise
                                                      #   reduction
 from src.classes.tensor_statistics_clustering_step import TensorStatisticsClusteringStep # pylint: disable-msg=C0301
 
-class RDClusteringStep(TensorStatisticsClusteringStep):
+class TVClusteringStep(TensorStatisticsClusteringStep):
     """Applying the DBSCAN algorithm it elimates clusters points
          according to RD values
 
     """
 
     def __init__(self):
-        super(RDClusteringStep, self).__init__("rd")
+        super(TVClusteringStep, self).__init__("tv")
 
     def get_clusterer(self):
-        return RDDBSCAN(self.eps, self.min_pts, self.mask.get_data(),
+        return TVDBSCAN(self.eps, self.min_pts, self.mask.get_data(),
                        self.shape(), self.tensor.get_data(),
                        self.maximum_fa_difference)
