@@ -39,6 +39,7 @@ class RegionStatisticsStep(CPUParallelStep):
         self.fa_results = {}
         self.rd_results = {}
         self.tv_results = {}
+        self.tc_results = {}
         self.mask = np.zeros((0, 0, 0))      # pylint: disable-msg=E1101
         self.tensor = np.zeros((0, 0, 0, 0)) # pylint: disable-msg=E1101
         self.shape = (0, 0, 0)
@@ -73,6 +74,7 @@ class RegionStatisticsStep(CPUParallelStep):
             self.fa_results[region] = []
             self.rd_results[region] = []
             self.tv_results[region] = []
+            self.tc_results[region] = []
 
         tensor_statistics = TensorStatistics(self.tensor.get_data()[point])
 
@@ -86,6 +88,8 @@ class RegionStatisticsStep(CPUParallelStep):
             tensor_statistics.radial_diffusivity())
         self.tv_results[region].append(
             tensor_statistics.toroidal_volume())
+        self.tc_results[region].append(
+            tensor_statistics.toroidal_curvature())
 
         self.__mutex.release()
 
@@ -102,7 +106,8 @@ class RegionStatisticsStep(CPUParallelStep):
 
         out.write('Region \t | # Voxels \t | MD mean \t |'+
                   'MD std \t | FA mean \t | FA std \t |'+
-                  'RD mean \t | RD std \t | TV mean \t | TV std \t \n')
+                  'RD mean \t | RD std \t | TV mean \t | TV std \t |'+
+                  'TC mean \t | TC std \t \n')
 
         for region in self.regions.keys():
             values = (region,
@@ -114,8 +119,11 @@ class RegionStatisticsStep(CPUParallelStep):
                       np.mean(self.rd_results[region]), # pylint: disable-msg=E1101,C0301
                       np.std(self.rd_results[region]),  # pylint: disable-msg=E1101,C0301
                       np.mean(self.tv_results[region]), # pylint: disable-msg=E1101,C0301
-                      np.std(self.tv_results[region]))  # pylint: disable-msg=E1101,C0301
+                      np.std(self.tv_results[region]),  # pylint: disable-msg=E1101,C0301
+                      np.mean(self.tc_results[region]), # pylint: disable-msg=E1101,C0301
+                      np.std(self.tc_results[region]))  # pylint: disable-msg=E1101,C0301
 
             out.write(("%5d \t | %8d \t | %6.3f \t |"+
                       " %5.3f \t | %6.3f \t | %6.3f \t |"+
-                      " %6.3f \t | %6.3f \t | %6.3f \t | %5.3f \t \n")%values)
+                      " %6.3f \t | %6.3f \t | %6.3f \t | %6.3f \t |"+
+                      " %6.3f \t | %6.3f \t \n")%values)

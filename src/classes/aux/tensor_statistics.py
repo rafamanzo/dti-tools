@@ -69,6 +69,70 @@ class TensorStatistics(object):
                     ((eigenvalues[1] * eigenvalues[2]) +
                         (m.pow(eigenvalues[2], 2) / 2.0)))
 
+    def toroidal_curvature(self):
+        """Tensor's toroidal curvature (TC)"""
+
+        eigenvalues, _ = self.__eigensystem()
+
+        phi = self.__argmax_tc()
+        alpha = ((2.0 * eigenvalues[1]) + eigenvalues[2])/(4.0 * eigenvalues[0])
+        beta = eigenvalues[2] * (4 * eigenvalues[0])
+        gama = 1.0 / 2.0
+
+        # Avoiding repeating calculations
+        beta_2 = m.pow(beta, 2)
+        gama_2 = m.pow(gama, 2)
+        cos_phi = m.cos(phi)
+
+        numerator = 4.0 * beta * gama_2 * cos_phi
+        denominator = ((alpha + beta * cos_phi) *
+                      m.pow((beta_2 + gama_2 +
+                                ((gama_2 - beta_2) * m.cos(2.0  * phi))), 2))
+
+        if denominator != 0.0:
+            return numerator / denominator
+        else:
+            return 0.0
+
+    def __argmax_tc(self): # Maybe the first and second derivates are faster
+        """Searches for the angles that maximizes the tc value"""
+
+        error = 0.0001 # Three decimal points precision
+
+        start = 0.0
+        end = m.pi
+
+        while (end - start) > error:
+            if self.__tc(start) >= self.__tc(end):
+                end = (start + end) / 2.0
+            else:
+                start = (start + end) / 2.0
+
+        return (start + end) / 2.0
+
+    def __tc(self, alpha):
+        """Torus maximum gaussian curvature at angle alpha"""
+
+        params = self.__torus_params()
+
+        denominator = (params[1]*(params[0] + params[1]*m.cos(alpha)))
+
+        if denominator != 0.0:
+            return m.cos(alpha) / denominator
+        else:
+            return 0.0
+
+    def __torus_params(self):
+        """Tensor's corresponding torus parameters"""
+
+        eigenvalues, _ = self.__eigensystem()
+
+        alpha = (2.0*eigenvalues[1] + eigenvalues[2])/4.0
+        beta = eigenvalues[2]/4.0
+        gama = eigenvalues[0]/2.0
+
+        return (alpha, beta, gama)
+
     def __eigensystem(self):
         """Tensor's eigensystem ordered by eigenvalues"""
         eigenvalues, eigenevctors = np.linalg.eig(self.__tensor_matrix()) # pylint: disable-msg=E1101,C0301

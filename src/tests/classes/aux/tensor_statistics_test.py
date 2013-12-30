@@ -54,3 +54,11 @@ class TensorStatisticsTestCase(unittest.TestCase):
         tensor_statistics = TensorStatistics((1.0, 0.0, 0.0, 1.0, 0.0, 1.0))
 
         self.assertTrue(m.fabs(tensor_statistics.toroidal_volume() - ((3.0*m.pi)/6.0)) <= error)
+
+    def test_toroidal_curvature(self):
+        error = 0.000000000000001
+        tensor_statistics = TensorStatistics((1.0, 0.0, 0.0, 1.0, 0.0, 1.0))
+
+        print("\n%.15f\n"%tensor_statistics.toroidal_curvature())
+
+        self.assertTrue(m.fabs(tensor_statistics.toroidal_curvature() - 3.368420076723892) <= error)
