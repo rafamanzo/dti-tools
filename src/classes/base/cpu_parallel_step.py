@@ -16,8 +16,8 @@
 
 """Container for the CPUParallelStep class"""
 
-from threading import Thread  # Makes possible to create threads
 import multiprocessing        # Useful on getting the processor count
+from multiprocessing import Process
 
 from src.classes.base.step import Step
 
@@ -36,7 +36,7 @@ class CPUParallelStep(Step): # pylint: disable-msg=R0903
 
         if i == workers_count:
             self.workers.append(
-                Thread(target=self.process_partition,
+                Process(target=self.process_partition,
                        args=(((i - 1)*partition_size,
                                i*partition_size + extra_size),
                              (0, self.shape[1]),
@@ -45,7 +45,7 @@ class CPUParallelStep(Step): # pylint: disable-msg=R0903
             )
         else:
             self.workers.append(
-                Thread(target=self.process_partition,
+                Process(target=self.process_partition,
                        args=(((i - 1)*partition_size, i*partition_size),
                              (0, self.shape[1]),
                              (0, self.shape[2]))
