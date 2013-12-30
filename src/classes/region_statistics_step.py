@@ -104,10 +104,10 @@ class RegionStatisticsStep(CPUParallelStep):
         out = open('%s_statistics.txt' %
                    (sys.argv[2].split('/')[-1].split('.')[0]), 'w')
 
-        out.write('Region \t | # Voxels \t | MD mean \t |'+
-                  'MD std \t | FA mean \t | FA std \t |'+
-                  'RD mean \t | RD std \t | TV mean \t | TV std \t |'+
-                  'TC mean \t | TC std \t \n')
+        out.write('Region \t | # Voxels \t | MD mean   \t |'+
+                  ' MD std   \t | FA mean  \t | FA std   \t |'+
+                  ' RD mean  \t | RD std   \t | TV mean  \t | TV std   \t |'+
+                  ' TC mean  \t | TC std   \t \n')
 
         for region in self.regions.keys():
             values = (region,
@@ -123,7 +123,7 @@ class RegionStatisticsStep(CPUParallelStep):
                       np.mean(self.tc_results[region]), # pylint: disable-msg=E1101,C0301
                       np.std(self.tc_results[region]))  # pylint: disable-msg=E1101,C0301
 
-            out.write(("%5d \t | %8d \t | %6.3f \t |"+
-                      " %5.3f \t | %6.3f \t | %6.3f \t |"+
-                      " %6.3f \t | %6.3f \t | %6.3f \t | %6.3f \t |"+
-                      " %6.3f \t | %6.3f \t \n")%values)
+            out.write(("%5d \t | %8d \t | %2.7f \t |"+
+                      " %2.6f \t | %2.7f \t | %2.7f \t |"+
+                      " %2.7f \t | %2.7f \t | %2.7f \t | %2.7f \t |"+
+                      " %2.7f \t | %2.7f \t \n")%values)
