@@ -75,7 +75,11 @@ class TensorStatistics(object):
         eigenvalues, _ = self.__eigensystem()
 
         phi = self.__argmax_tc()
-        alpha = ((2.0 * eigenvalues[1]) + eigenvalues[2])/(4.0 * eigenvalues[0])
+        alpha_denominator = (4.0 * eigenvalues[0])
+        if alpha_denominator != 0.0:
+            alpha = ((2.0 * eigenvalues[1]) + eigenvalues[2]) / alpha_denominator
+        else:
+            alpha = 0.0
         beta = eigenvalues[2] * (4 * eigenvalues[0])
         gama = 1.0 / 2.0
 
