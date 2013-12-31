@@ -17,6 +17,10 @@
 """Container for DBSCAN class"""
 
 import numpy as np
+from multiprocessing import cpu_count, Process, Queue, Value, Array
+from multiprocessing.queues import Empty
+from threading import Thread
+import time
 
 # pylint: disable-msg=R0903,R0922
 
@@ -31,6 +35,12 @@ class DBSCAN(object):
         self.__shape = shape
         self.__result = np.zeros(self.__shape,  # pylint: disable-msg=E1101
                                  dtype=np.int8) # pylint: disable-msg=E1101
+        self.expandable_neighbours = Queue()
+        self.to_be_inserted = Queue()
+        self.__workers = []
+        self.idle_workers = Queue()
+        self.processing = Queue()
+        self.__current_cluster = set()
 
     def neighbourhood_criteria(self, centroid, point):
         """  Checks for wheter a givens point should be part of a beighbourhood
@@ -56,9 +66,7 @@ class DBSCAN(object):
 
         return neighbourhood
 
-    def __expand_neighbourhood(self, point, neighbourhood, cluster):
-        """Expands a neighbourhood until it is not possible"""
-
+    def __expand_neighbourhood(self, point, neighbourhood):
         neighbour = point
 
         for neighbour in neighbourhood:
@@ -66,28 +74,77 @@ class DBSCAN(object):
                self.__mask[neighbour[0]][neighbour[1]][neighbour[2]] == 1 and
                self.neighbourhood_criteria(point,
                                            (neighbour[0], neighbour[1], neighbour[2]))): # pylint: disable-msg=C0301
-                self.__result[neighbour[0]][neighbour[1]][neighbour[2]] = 1
-                cluster.add(neighbour)
+                self.to_be_inserted.put(neighbour)
+                self.__result[neighbour] = 1
                 neighbour_neighbourhood = self.__neighbourhood(neighbour)
                 if len(neighbour_neighbourhood) >= self.__min_pts:
-                    neighbourhood.update(neighbour_neighbourhood)
-                    return True, neighbour, neighbourhood, cluster
+                    self.expandable_neighbours.put((neighbour, neighbour_neighbourhood))
+        
 
-        return (False,
-                (neighbour[0], neighbour[1], neighbour[2]),
-                neighbourhood,
-                cluster)
+    def __expansor(self, id):
+        """Expands a neighbourhood until it is not possible"""
 
-    def __expand_cluster(self, point, neighbourhood, cluster):
+        active = True
+
+        while self.processing.empty() or not self.expandable_neighbours.empty():
+            try:
+                resource = self.expandable_neighbours.get(True, 1)
+                if not active:
+                    active = True
+                    self.idle_workers.get()
+                self.__expand_neighbourhood(resource[0], resource[1])
+            except Empty:
+                if active:
+                    active = False
+                    self.idle_workers.put(id)
+
+
+    def __join_workers(self, worker_count):
+        active = True
+        while active:
+            if self.idle_workers.qsize() >= worker_count and self.expandable_neighbours.empty():
+                active = False
+                self.processing.put(0)
+            else:
+                time.sleep(1)
+
+        for worker in range(0, worker_count):
+            self.__workers[worker].join()
+
+    def __add_points_to_cluster(self):
+        while self.processing.empty() or not self.to_be_inserted.empty():
+            try:
+                point = self.to_be_inserted.get(True, 1)
+                self.__current_cluster.add(point)
+                self.__result[point] = 1
+            except Empty:
+                time.sleep(1)
+
+    def __expand_cluster(self, point, neighbourhood):
         """Creates a cluster based on a given point and it's neighbourhood"""
-        can_be_expanded = True
-        expand_point = point
+        worker_count = cpu_count()
+        self.__workers = []
+        self.active_workers = Array('i', np.ones(worker_count, np.int_))
+        self.expandable_neighbours.put((point, neighbourhood))
+        self.processing = Queue()
+        self.idle_workers = Queue()
+        self.__current_cluster = set()
 
-        while can_be_expanded:
-            can_be_expanded, expand_point, neighbourhood, cluster = self.__expand_neighbourhood(expand_point, neighbourhood, cluster)  # pylint: disable-msg=C0301
+        for worker in range(0, worker_count):
+            self.__workers.append(Process(target=self.__expansor, args=(worker,)))
+            self.__workers[worker].start()
+
+        manager = Thread(target=self.__join_workers, args=(worker_count,))
+        consumer = Thread(target=self.__add_points_to_cluster)
+        manager.start()
+        consumer.start()
+
+        manager.join()
+        consumer.join()
+
 
     def __discard_cluster(self, centroid, cluster):
-        """Desconsider a given cluster and mark it's centroid as noise"""
+        """Disconsider a given cluster and mark it's centroid as noise"""
         for point in cluster:
             self.__result[point] = 0
         self.__result[centroid] = -1
@@ -106,13 +163,11 @@ class DBSCAN(object):
                            not self.neighbourhood_criteria((x, y, z), (x, y, z))): # pylint: disable-msg=C0301
                             self.__result[x][y][z] = -1
                         else:
-                            cluster = set()
                             self.__expand_cluster((x, y, z),
-                                                  neighbourhood,
-                                                  cluster)
-                            if len(cluster) >= self.__min_pts:
-                                clusters.append(cluster)
+                                                  neighbourhood)
+                            if len(self.__current_cluster) >= self.__min_pts:
+                                clusters.append(self.__current_cluster)
                             else:
-                                self.__discard_cluster((x, y, z), cluster)
+                                self.__discard_cluster((x, y, z), self.__current_cluster)
 
         return clusters, self.__result
