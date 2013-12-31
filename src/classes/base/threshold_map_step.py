@@ -66,7 +66,10 @@ class ThresholdMapStep(CPUParallelStep):
                 for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
                     if self.mask_data[x][y][z]:
                         if (self.check_for_threshold(self.tensor_data[x][y][z])):  # pylint: disable-msg=C0301
-                            self.threshold_mask[x][y][z] = 1
+                            self.queue.put((x, y, z))
+
+    def consume_product(self, product):
+        self.threshold_mask[product] = 1
 
     def save(self):
         isotropy_img = nib.Nifti1Image(

@@ -19,7 +19,6 @@
 import sys                    # Makes possible to get the arguments
 import nibabel as nib         # Lib for reading and writing Nifit1
 import numpy as np            # Nibabel is based on Numpy
-from threading import Lock    # Mutual exclusion
 
 from src.classes.base.cpu_parallel_step import CPUParallelStep
 from src.classes.aux.tensor_statistics import TensorStatistics
@@ -33,7 +32,6 @@ class RegionStatisticsStep(CPUParallelStep):
 
     def __init__(self):
         super(RegionStatisticsStep, self).__init__()
-        self.__mutex = Lock()
         self.regions = {}
         self.md_results = {}
         self.fa_results = {}
@@ -60,13 +58,31 @@ class RegionStatisticsStep(CPUParallelStep):
                       self.mask.shape[1],
                       self.mask.shape[2])
 
-    def __add_point_to_region(self, point):
-        """Adds a point to it's corresponding region and
-                calculates it's statistics
-
-        """
+    def __get_point_results(self, point):
+        """Calculates statistics for the given point"""
 
         region = self.mask.get_data()[point]
+
+        tensor_statistics = TensorStatistics(self.tensor.get_data()[point])
+
+        return {(region, point): (tensor_statistics.mean_diffusivity(),
+                                  tensor_statistics.fractional_anisotropy(),
+                                  tensor_statistics.radial_diffusivity(),
+                                  tensor_statistics.toroidal_volume(),
+                                  tensor_statistics.toroidal_curvature())}
+
+    def process_partition(self, x_range, y_range, z_range):
+        for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
+            for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
+                for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
+                    if self.mask.get_data()[(x, y, z)] > 0:
+                        self.queue.put(self.__get_point_results((x, y, z)))
+
+    def consume_product(self, product):
+        key = list(product)[0]
+        region = key[0]
+        point = key[1]
+        results = product[key]
 
         if not region in self.regions:
             self.regions[region] = []
@@ -76,29 +92,12 @@ class RegionStatisticsStep(CPUParallelStep):
             self.tv_results[region] = []
             self.tc_results[region] = []
 
-        tensor_statistics = TensorStatistics(self.tensor.get_data()[point])
-
-        self.__mutex.acquire()
-
         self.regions[region].append(point)
-        self.md_results[region].append(tensor_statistics.mean_diffusivity())
-        self.fa_results[region].append(
-            tensor_statistics.fractional_anisotropy())
-        self.rd_results[region].append(
-            tensor_statistics.radial_diffusivity())
-        self.tv_results[region].append(
-            tensor_statistics.toroidal_volume())
-        self.tc_results[region].append(
-            tensor_statistics.toroidal_curvature())
-
-        self.__mutex.release()
-
-    def process_partition(self, x_range, y_range, z_range):
-        for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
-            for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
-                for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
-                    if self.mask.get_data()[(x, y, z)] > 0:
-                        self.__add_point_to_region((x, y, z))
+        self.md_results[region].append(results[0])
+        self.fa_results[region].append(results[1])
+        self.rd_results[region].append(results[2])
+        self.tv_results[region].append(results[3])
+        self.tc_results[region].append(results[4])
 
     def save(self):
         out = open('%s_statistics.txt' %

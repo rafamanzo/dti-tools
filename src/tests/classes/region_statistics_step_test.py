@@ -67,6 +67,29 @@ class RegionStatisticsStepTestCase(unittest.TestCase):
 
         self.region_statistics_step.process_partition((0,1),(0,1),(0,3))
 
+    def test_consume_product(self):
+        product = {(1, (0,0,0)):
+                    (1.0,1.0,1.0,1.0,1.0)}
+
+        self.region_statistics_step.consume_product(product)
+
+        self.assertEqual(self.region_statistics_step.md_results[1], [1.0])
+        self.assertEqual(self.region_statistics_step.fa_results[1], [1.0])
+        self.assertEqual(self.region_statistics_step.rd_results[1], [1.0])
+        self.assertEqual(self.region_statistics_step.tc_results[1], [1.0])
+        self.assertEqual(self.region_statistics_step.tv_results[1], [1.0])
+
+        product = {(1, (1,0,0)):
+                    (2.0,2.0,2.0,2.0,2.0)}
+
+        self.region_statistics_step.consume_product(product)
+
+        self.assertEqual(self.region_statistics_step.md_results[1], [1.0, 2.0])
+        self.assertEqual(self.region_statistics_step.fa_results[1], [1.0, 2.0])
+        self.assertEqual(self.region_statistics_step.rd_results[1], [1.0, 2.0])
+        self.assertEqual(self.region_statistics_step.tc_results[1], [1.0, 2.0])
+        self.assertEqual(self.region_statistics_step.tv_results[1], [1.0, 2.0])
+
     def test_save(self):
         self.region_statistics_step.regions[1] = [(0,0,0)]
         self.region_statistics_step.md_results[1] = [1.0]

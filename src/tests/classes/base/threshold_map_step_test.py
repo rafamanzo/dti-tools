@@ -24,6 +24,7 @@ from src.classes.base.threshold_map_step import ThresholdMapStep
 
 import nibabel as nib # Necessary to mock the calls to it
 import numpy as np    # Necessary for assertions
+import time
 
 class ThresholdMapStepTestCase(unittest.TestCase):
     def setUp(self):
@@ -80,9 +81,12 @@ class ThresholdMapStepTestCase(unittest.TestCase):
 
         self.threshold_map_step.process_partition((0,1),(0,1),(0,3))
 
-        self.assertEqual(self.threshold_map_step.threshold_mask, [[[1,1,0]]])
+        time.sleep(0.1)
+        self.assertFalse(self.threshold_map_step.queue.empty())
 
         # Test the other branch of execution
+        while not self.threshold_map_step.queue.empty():
+            self.threshold_map_step.queue.get()
         self.threshold_map_step.check_for_threshold = Mock(return_value=False)
         self.threshold_map_step.mask_data=[[[1,1,0]]]
         self.threshold_map_step.tensor_data = [[[
@@ -95,4 +99,11 @@ class ThresholdMapStepTestCase(unittest.TestCase):
         
         self.threshold_map_step.process_partition((0,1),(0,1),(0,3))
 
-        self.assertEqual(self.threshold_map_step.threshold_mask, [[[0,0,0]]])
+        self.assertTrue(self.threshold_map_step.queue.empty())
+
+    def test_consume_product(self):
+        self.threshold_map_step.threshold_mask = np.zeros((1,1,3))
+
+        self.threshold_map_step.consume_product((0,0,0))
+
+        self.assertEqual(self.threshold_map_step.threshold_mask[0][0][0], 1)

@@ -17,7 +17,9 @@
 """Container for the CPUParallelStep class"""
 
 import multiprocessing        # Useful on getting the processor count
-from multiprocessing import Process
+from multiprocessing import Process, Queue
+import multiprocessing.queues as mq
+from threading import Thread
 
 from src.classes.base.step import Step
 
@@ -29,6 +31,8 @@ class CPUParallelStep(Step): # pylint: disable-msg=R0903
     def __init__(self):
         self.workers = []
         self.shape = (0, 0, 0, 0)
+        self.queue = Queue()
+        self.__processing = True
 
     def __start_worker(self, workers_count, partition_size, extra_size):
         """Given a partition of the dataset, starts the thread to process it"""
@@ -66,12 +70,52 @@ class CPUParallelStep(Step): # pylint: disable-msg=R0903
         """
         raise NotImplementedError("Please implement this method")
 
+    def consume_product(self, product):
+        """Unimplemented method that should contain
+           the logic for consuming a given data from the queue
+
+        """
+        raise NotImplementedError("Please implement this method")
+
+    def __consumer(self):
+        """Thread that consumes elements from the queue"""
+
+        while (not self.queue.empty()) or self.__processing:
+            try:
+                self.consume_product(self.queue.get(True, 1))
+            except mq.Empty:
+                pass
+
+    def __sequential_fallback(self):
+        """When there is just one processor"""
+
+        self.process_partition((0, self.shape[0]),
+                               (0, self.shape[1]),
+                               (0, self.shape[2]))
+        self.__processing = False
+        while not self.queue.empty():
+            self.consume_product(self.queue.get())
+
+    def workers_count(self): # pylint: disable-msg=R0201
+        """Returns the cpu count"""
+
+        return multiprocessing.cpu_count()
+
     def process(self):
-        workers_count = multiprocessing.cpu_count()
-        partition_size = int(self.shape[0]/workers_count)
-        extra_size = self.shape[0] % workers_count
+        workers_count = self.workers_count()
+        if workers_count > 1:
+            partition_size = int(self.shape[0]/workers_count)
+            extra_size = self.shape[0] % workers_count
 
-        for _ in range(1, workers_count+1):
-            self.__start_worker(workers_count, partition_size, extra_size)
+            for _ in range(1, workers_count+1):
+                self.__start_worker(workers_count, partition_size, extra_size)
+            manager = Thread(target=self.__join_workers)
+            consumer = Thread(target=self.__consumer)
+            manager.start()
+            consumer.start()
 
-        self.__join_workers()
+            manager.join()
+            self.__processing = False
+            consumer.join()
+        else:
+            self.__sequential_fallback()
