@@ -16,9 +16,10 @@
 
 """Container for RegionStatisticsStep class"""
 
-import sys                    # Makes possible to get the arguments
-import nibabel as nib         # Lib for reading and writing Nifit1
-import numpy as np            # Nibabel is based on Numpy
+import sys                      # Makes possible to get the arguments
+import nibabel as nib           # Lib for reading and writing Nifit1
+import numpy as np              # Nibabel is based on Numpy
+import matplotlib.pyplot as plt # Histogram ploting
 
 from src.classes.base.cpu_parallel_step import CPUParallelStep
 from src.classes.aux.tensor_statistics import TensorStatistics
@@ -99,30 +100,62 @@ class RegionStatisticsStep(CPUParallelStep):
         self.tv_results[region].append(results[3])
         self.tc_results[region].append(results[4])
 
+    def __plot_histogram(self, data, file_name):
+        plt.clf()
+        plt.hist(data, bins=len(data))
+        plt.savefig(file_name)
+
     def save(self):
-        out = open('%s_statistics.txt' %
-                   (sys.argv[2].split('/')[-1].split('.')[0]), 'w')
+        file_prefix = sys.argv[2].split('/')[-1].split('.')[0]
+        out = open('%s_statistics.txt'%file_prefix, 'w')
 
         out.write('Region \t | # Voxels \t | MD mean   \t |'+
                   ' MD std   \t | FA mean  \t | FA std   \t |'+
                   ' RD mean  \t | RD std   \t | TV mean  \t | TV std   \t |'+
                   ' TC mean  \t | TC std   \t \n')
 
+        region_sizes = []
+        md_means = []
+        fa_means = []
+        rd_means = []
+        tc_means = []
+        tv_means = []
+
         for region in self.regions.keys():
+            region_sizes.append(len(self.regions[region]))
+            md_mean = np.mean(self.md_results[region]) # pylint: disable-msg=E1101,C0301
+            md_means.append(md_mean)
+            fa_mean = np.mean(self.fa_results[region]) # pylint: disable-msg=E1101,C0301
+            fa_means.append(fa_mean)
+            rd_mean = np.mean(self.rd_results[region]) # pylint: disable-msg=E1101,C0301
+            rd_means.append(rd_mean)
+            tc_mean = np.mean(self.tc_results[region]) # pylint: disable-msg=E1101,C0301
+            tc_means.append(tc_mean)
+            tv_mean = np.mean(self.tv_results[region]) # pylint: disable-msg=E1101,C0301
+            tv_means.append(tv_mean)
+
             values = (region,
                       len(self.regions[region]),
-                      np.mean(self.md_results[region]), # pylint: disable-msg=E1101,C0301
-                      np.std(self.md_results[region]),  # pylint: disable-msg=E1101,C0301
-                      np.mean(self.fa_results[region]), # pylint: disable-msg=E1101,C0301
-                      np.std(self.fa_results[region]),  # pylint: disable-msg=E1101,C0301
-                      np.mean(self.rd_results[region]), # pylint: disable-msg=E1101,C0301
-                      np.std(self.rd_results[region]),  # pylint: disable-msg=E1101,C0301
-                      np.mean(self.tv_results[region]), # pylint: disable-msg=E1101,C0301
-                      np.std(self.tv_results[region]),  # pylint: disable-msg=E1101,C0301
-                      np.mean(self.tc_results[region]), # pylint: disable-msg=E1101,C0301
-                      np.std(self.tc_results[region]))  # pylint: disable-msg=E1101,C0301
+                      md_mean,
+                      np.std(self.md_results[region]), # pylint: disable-msg=E1101,C0301
+                      fa_mean,
+                      np.std(self.fa_results[region]), # pylint: disable-msg=E1101,C0301
+                      rd_mean,
+                      np.std(self.rd_results[region]), # pylint: disable-msg=E1101,C0301
+                      tc_mean,
+                      np.std(self.tv_results[region]), # pylint: disable-msg=E1101,C0301
+                      tv_mean,
+                      np.std(self.tc_results[region])) # pylint: disable-msg=E1101,C0301
 
             out.write(("%5d \t | %8d \t | %2.7f \t |"+
                       " %2.6f \t | %2.7f \t | %2.7f \t |"+
                       " %2.7f \t | %2.7f \t | %2.7f \t | %2.7f \t |"+
                       " %2.7f \t | %2.7f \t \n")%values)
+
+        self.__plot_histogram(region_sizes,
+                              ("%s_region_sizes_hist.png"%file_prefix))
+        self.__plot_histogram(md_means,"%s_md_means_hist.png"%file_prefix)
+        self.__plot_histogram(fa_means,"%s_fa_means_hist.png"%file_prefix)
+        self.__plot_histogram(rd_means,"%s_rd_means_hist.png"%file_prefix)
+        self.__plot_histogram(tc_means,"%s_tc_means_hist.png"%file_prefix)
+        self.__plot_histogram(tv_means,"%s_tv_means_hist.png"%file_prefix)

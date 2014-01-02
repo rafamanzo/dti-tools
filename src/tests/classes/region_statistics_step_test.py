@@ -24,6 +24,7 @@ from unittest.mock import patch
 
 import nibabel as nib # Necessary to mock the calls to it
 import numpy as np
+import matplotlib.pyplot as plt
 from src.classes.region_statistics_step import RegionStatisticsStep
 from src.classes.aux.tensor_statistics import TensorStatistics
 
@@ -91,6 +92,8 @@ class RegionStatisticsStepTestCase(unittest.TestCase):
         self.assertEqual(self.region_statistics_step.tv_results[1], [1.0, 2.0])
 
     def test_save(self):
+        plt.savefig = Mock(return_value=True)
+
         self.region_statistics_step.regions[1] = [(0,0,0)]
         self.region_statistics_step.md_results[1] = [1.0]
         self.region_statistics_step.fa_results[1] = [1.0]
@@ -104,3 +107,5 @@ class RegionStatisticsStepTestCase(unittest.TestCase):
             self.region_statistics_step.save()
 
         open_mock.assert_called_with('mask_statistics.txt', 'w')
+
+        plt.savefig.assert_called_with('mask_tv_means_hist.png')

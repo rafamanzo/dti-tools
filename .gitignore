@@ -41,6 +41,7 @@ nosetests.xml
 *.img
 *.dat
 *.txt
+*.png
 
 # Test coverage report
 htmlcov
