@@ -17,9 +17,9 @@
 """Container for DBSCAN class"""
 
 import numpy as np
-from multiprocessing import cpu_count, Process, Queue, Value, Array
-from multiprocessing.queues import Empty
 from threading import Thread
+from multiprocessing import cpu_count, Process, JoinableQueue, Event
+from multiprocessing.queues import Empty
 import time
 
 # pylint: disable-msg=R0903,R0922
@@ -35,11 +35,12 @@ class DBSCAN(object):
         self.__shape = shape
         self.__result = np.zeros(self.__shape,  # pylint: disable-msg=E1101
                                  dtype=np.int8) # pylint: disable-msg=E1101
-        self.expandable_neighbours = Queue()
-        self.to_be_inserted = Queue()
+        self.expandable_neighbours = JoinableQueue()
+        self.to_be_inserted = JoinableQueue()
+        self.worker_result_updates = []
         self.__workers = []
-        self.idle_workers = Queue()
-        self.processing = Queue()
+        self.idle_workers = []
+        self.processing = Event()
         self.__current_cluster = set()
 
     def neighbourhood_criteria(self, centroid, point):
@@ -66,82 +67,105 @@ class DBSCAN(object):
 
         return neighbourhood
 
-    def __expand_neighbourhood(self, point, neighbourhood):
+    def __expand_neighbourhood(self, worker_id, point, neighbourhood):
+        """Expands a given neighbourhood"""
+
         neighbour = point
 
         for neighbour in neighbourhood:
-            if(self.__result[neighbour[0]][neighbour[1]][neighbour[2]] == 0 and
-               self.__mask[neighbour[0]][neighbour[1]][neighbour[2]] == 1 and
-               self.neighbourhood_criteria(point,
-                                           (neighbour[0], neighbour[1], neighbour[2]))): # pylint: disable-msg=C0301
+            if(self.__result[neighbour[0]][neighbour[1]][neighbour[2]] == 0): # pylint: disable-msg=C0301
                 self.to_be_inserted.put(neighbour)
                 self.__result[neighbour] = 1
+                self.__add_result(worker_id, neighbour, 1)
                 neighbour_neighbourhood = self.__neighbourhood(neighbour)
                 if len(neighbour_neighbourhood) >= self.__min_pts:
-                    self.expandable_neighbours.put((neighbour, neighbour_neighbourhood))
-        
+                    self.expandable_neighbours.put((neighbour, neighbour_neighbourhood)) # pylint: disable-msg=C0301
 
-    def __expansor(self, id):
+
+    def __expansor(self, worker_id):
         """Expands a neighbourhood until it is not possible"""
 
-        active = True
-
-        while self.processing.empty() or not self.expandable_neighbours.empty():
+        while (not self.processing.is_set() or
+               not self.expandable_neighbours.empty()):
             try:
-                resource = self.expandable_neighbours.get(True, 1)
-                if not active:
-                    active = True
-                    self.idle_workers.get()
-                self.__expand_neighbourhood(resource[0], resource[1])
+                resource = self.expandable_neighbours.get(True, 0.1)
+                self.idle_workers[worker_id].clear()
+                self.__expand_neighbourhood(worker_id, resource[0], resource[1])
+                self.expandable_neighbours.task_done()
             except Empty:
-                if active:
-                    active = False
-                    self.idle_workers.put(id)
+                self.idle_workers[worker_id].set()
 
+    def __results_updater(self, worker_id):
+        """Updates the results map"""
 
-    def __join_workers(self, worker_count):
-        active = True
-        while active:
-            if self.idle_workers.qsize() >= worker_count and self.expandable_neighbours.empty():
-                active = False
-                self.processing.put(0)
-            else:
+        while not self.processing.is_set():
+            try:
+                resource = self.worker_result_updates[worker_id].get(True, 1)
+                self.__result[resource[0]] = resource[1]
+                self.worker_result_updates[worker_id].task_done()
+            except Empty:
                 time.sleep(1)
 
-        for worker in range(0, worker_count):
-            self.__workers[worker].join()
+    def __add_result(self, worker_id, point, result):
+        """Enqueue a new result for propagation"""
+        for worker in range(0, cpu_count()):
+            if worker != worker_id:
+                self.worker_result_updates[worker].put((point, result))
+
+    def __cluster_finished(self):
+        """Checks wheter all the workers are idle"""
+        finished = True
+
+        for worker in range(0, cpu_count()):
+            finished = finished and self.idle_workers[worker].is_set()
+
+        return finished and self.expandable_neighbours.empty()
 
     def __add_points_to_cluster(self):
-        while self.processing.empty() or not self.to_be_inserted.empty():
+        """Consumes results"""
+        while True:
             try:
-                point = self.to_be_inserted.get(True, 1)
+                point = self.to_be_inserted.get(True, 0.1)
+                if point == None:
+                    self.to_be_inserted.task_done()
+                    break
                 self.__current_cluster.add(point)
                 self.__result[point] = 1
+                self.to_be_inserted.task_done()
             except Empty:
-                time.sleep(1)
+                pass
 
     def __expand_cluster(self, point, neighbourhood):
         """Creates a cluster based on a given point and it's neighbourhood"""
-        worker_count = cpu_count()
-        self.__workers = []
-        self.active_workers = Array('i', np.ones(worker_count, np.int_))
-        self.expandable_neighbours.put((point, neighbourhood))
-        self.processing = Queue()
-        self.idle_workers = Queue()
+
         self.__current_cluster = set()
+        self.expandable_neighbours.put((point, neighbourhood))
 
-        for worker in range(0, worker_count):
-            self.__workers.append(Process(target=self.__expansor, args=(worker,)))
-            self.__workers[worker].start()
-
-        manager = Thread(target=self.__join_workers, args=(worker_count,))
         consumer = Thread(target=self.__add_points_to_cluster)
-        manager.start()
         consumer.start()
 
-        manager.join()
+        self.expandable_neighbours.join()
+
+        while not self.__cluster_finished():
+            time.sleep(1)
+
+        self.expandable_neighbours.join()
+        self.to_be_inserted.join()
+        self.to_be_inserted.put(None)
+
         consumer.join()
 
+    def __worker(self, worker_id):
+        """Worker process"""
+
+        updater = Thread(target=self.__results_updater, args=(worker_id,))
+        expansor = Thread(target=self.__expansor, args=(worker_id,))
+
+        updater.start()
+        expansor.start()
+
+        updater.join()
+        expansor.join()
 
     def __discard_cluster(self, centroid, cluster):
         """Disconsider a given cluster and mark it's centroid as noise"""
@@ -149,10 +173,23 @@ class DBSCAN(object):
             self.__result[point] = 0
         self.__result[centroid] = -1
 
+    def __wait_results_update(self):
+        """Barrier for result propagation"""
+        for result_queue in self.worker_result_updates:
+            result_queue.join()
 
     def fit(self):
         """For the given data, returns the clusters and result matrix"""
         clusters = []
+
+        for worker in range(0, cpu_count()):
+            self.idle_workers.append(Event())
+            self.worker_result_updates.append(JoinableQueue())
+
+        for worker in range(0, cpu_count()):
+            self.__workers.append(Process(target=self.__worker, args=(worker,)))
+            self.__workers[worker].start()
+
         for x in range(0, self.__shape[0]):         # pylint: disable-msg=C0103,C0301
             for y in range(0, self.__shape[1]):     # pylint: disable-msg=C0103,C0301
                 for z in range(0, self.__shape[2]): # pylint: disable-msg=C0103,C0301
@@ -162,12 +199,20 @@ class DBSCAN(object):
                            self.__mask[x][y][z] == 0 or
                            not self.neighbourhood_criteria((x, y, z), (x, y, z))): # pylint: disable-msg=C0301
                             self.__result[x][y][z] = -1
+                            self.__add_result(-1, (x, y, z), -1)
                         else:
+                            self.__wait_results_update()
                             self.__expand_cluster((x, y, z),
                                                   neighbourhood)
                             if len(self.__current_cluster) >= self.__min_pts:
                                 clusters.append(self.__current_cluster)
                             else:
-                                self.__discard_cluster((x, y, z), self.__current_cluster)
+                                self.__discard_cluster((x, y, z),
+                                                       self.__current_cluster)
+
+        self.processing.set()
+
+        for worker in range(0, cpu_count()):
+            self.__workers[worker].join()
 
         return clusters, self.__result
