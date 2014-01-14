@@ -1,1 +1,1 @@
-"""Container for clustering algorithms"""
+"""Container for clustering algorithms implementations"""

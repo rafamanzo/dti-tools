@@ -1,5 +1,5 @@
 # This file is part of Improving Tractogrophy
-# Copyright (C) 2013 it's respectives authors (please see the AUTHORS file)
+# Copyright (C) 2013-2014 it's respectives authors (please see the AUTHORS file)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -101,6 +101,7 @@ class RegionStatisticsStep(CPUParallelStep):
         self.tc_results[region].append(results[4])
 
     def __plot_histogram(self, data, file_name):
+        """Plots a histogram for the given data and saves in the file"""
         plt.clf()
         plt.hist(data, bins=len(data))
         plt.savefig(file_name)
@@ -154,8 +155,8 @@ class RegionStatisticsStep(CPUParallelStep):
 
         self.__plot_histogram(region_sizes,
                               ("%s_region_sizes_hist.png"%file_prefix))
-        self.__plot_histogram(md_means,"%s_md_means_hist.png"%file_prefix)
-        self.__plot_histogram(fa_means,"%s_fa_means_hist.png"%file_prefix)
-        self.__plot_histogram(rd_means,"%s_rd_means_hist.png"%file_prefix)
-        self.__plot_histogram(tc_means,"%s_tc_means_hist.png"%file_prefix)
-        self.__plot_histogram(tv_means,"%s_tv_means_hist.png"%file_prefix)
+        self.__plot_histogram(md_means, "%s_md_means_hist.png"%file_prefix)
+        self.__plot_histogram(fa_means, "%s_fa_means_hist.png"%file_prefix)
+        self.__plot_histogram(rd_means, "%s_rd_means_hist.png"%file_prefix)
+        self.__plot_histogram(tc_means, "%s_tc_means_hist.png"%file_prefix)
+        self.__plot_histogram(tv_means, "%s_tv_means_hist.png"%file_prefix)

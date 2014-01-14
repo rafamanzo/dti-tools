@@ -29,7 +29,6 @@ class DBSCANTestCase(unittest.TestCase):
         self.shape = (2,2,2)
         self.mask = np.ones(self.shape, dtype=np.int16)
         self.mask[1][1][1] = 0
-        DBSCAN.neighbourhood_criteria = Mock(return_value=True)
         self.dbscan = DBSCAN(1,1,self.mask, self.shape)
 
     def test_neighbourhood_criteria(self):

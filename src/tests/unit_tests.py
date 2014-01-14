@@ -1,5 +1,5 @@
 # This file is part of Improving Tractogrophy
-# Copyright (C) 2013 it's respectives authors (please see the AUTHORS file)
+# Copyright (C) 2013-2014 it's respectives authors (please see the AUTHORS file)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import unittest
 from src.tests.classes.base.step_test import StepTestCase
 from src.tests.classes.base.cpu_parallel_step_test import CPUParallelStepTestCase
 from src.tests.classes.base.threshold_map_step_test import ThresholdMapStepTestCase
-from src.tests.classes.aux.clustering.dbscan_test import DBSCANTestCase
+from src.tests.classes.aux.clustering.base.dbscan_test import DBSCANTestCase
 from src.tests.classes.aux.clustering.mask_dbscan_test import MaskDBSCANTestCase
 from src.tests.classes.aux.clustering.tensor_statistics_dbscan_test import TensorStatisticsDBSCANTestCase
 from src.tests.classes.aux.clustering.fa_dbscan_test import FADBSCANTestCase

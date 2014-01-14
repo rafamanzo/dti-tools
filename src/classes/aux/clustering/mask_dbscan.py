@@ -1,5 +1,5 @@
 # This file is part of Improving Tractogrophy
-# Copyright (C) 2013 it's respectives authors (please see the AUTHORS file)
+# Copyright (C) 2013-2014 it's respectives authors (please see the AUTHORS file)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 
 """Container for MaskDBSCAN class"""
 
-from src.classes.aux.clustering.dbscan import DBSCAN
+from src.classes.aux.clustering.base.dbscan import DBSCAN
 
 # pylint: disable-msg=R0903,R0922
 
