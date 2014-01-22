@@ -20,6 +20,7 @@ import sys                      # Makes possible to get the arguments
 import nibabel as nib           # Lib for reading and writing Nifit1
 import numpy as np              # Nibabel is based on Numpy
 import matplotlib.pyplot as plt # Histogram ploting
+from matplotlib.ticker import MaxNLocator
 
 from src.classes.base.cpu_parallel_step import CPUParallelStep
 from src.classes.aux.tensor_statistics import TensorStatistics
@@ -103,6 +104,8 @@ class RegionStatisticsStep(CPUParallelStep):
     def __plot_histogram(self, data, file_name):
         """Plots a histogram for the given data and saves in the file"""
         plt.clf()
+        plt.gca().xaxis.get_major_formatter().set_powerlimits((0, 0))
+        plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
         plt.hist(data, bins=len(data))
         plt.savefig(file_name)
 
