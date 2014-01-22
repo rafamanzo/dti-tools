@@ -85,6 +85,10 @@ class DBSCAN(object):
         self.__results_manager.add_result(-1, centroid, -1)
         self.__results_manager.wait_results_update()
 
+    def set_base_negighbourhood_criteria(self, criteria_function):
+        self.__base.set_negighbourhood_criteria(criteria_function)
+        self.neighbourhood_criteria = criteria_function
+
     def neighbourhood_criteria(self, centroid, point):
         """  Checks for wheter a given point should be part of a neighbourhood
 
@@ -92,6 +96,7 @@ class DBSCAN(object):
            centroid and point args are equal this must return true
         """
         raise NotImplementedError("Please implement this method")
+
 
     def fit(self):
         """For the given data, returns the clusters and result matrix"""

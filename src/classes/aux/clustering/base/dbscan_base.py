@@ -69,3 +69,6 @@ class DBSCANBase(object):
     def get_mask_val(self, point):
         """Returns the mask value at a given point"""
         return self.__mask[point]
+
+    def set_negighbourhood_criteria(self, criteria_function):
+        self.__neighbourhood_criteria = criteria_function
