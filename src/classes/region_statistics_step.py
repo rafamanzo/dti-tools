@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt # Histogram ploting
 from matplotlib.ticker import MaxNLocator
 
 from src.classes.base.cpu_parallel_step import CPUParallelStep
-from src.classes.aux.tensor_statistics import TensorStatistics
+from src.classes.aux.tensor_indexes import TensorIndexes
 from src.classes.aux.input_validators import validate_tensor_and_mask
 
 class RegionStatisticsStep(CPUParallelStep):
@@ -65,13 +65,13 @@ class RegionStatisticsStep(CPUParallelStep):
 
         region = self.mask.get_data()[point]
 
-        tensor_statistics = TensorStatistics(self.tensor.get_data()[point])
+        tensor_indexes = TensorIndexes(self.tensor.get_data()[point])
 
-        return {(region, point): (tensor_statistics.mean_diffusivity(),
-                                  tensor_statistics.fractional_anisotropy(),
-                                  tensor_statistics.radial_diffusivity(),
-                                  tensor_statistics.toroidal_volume(),
-                                  tensor_statistics.toroidal_curvature())}
+        return {(region, point): (tensor_indexes.mean_diffusivity(),
+                                  tensor_indexes.fractional_anisotropy(),
+                                  tensor_indexes.radial_diffusivity(),
+                                  tensor_indexes.toroidal_volume(),
+                                  tensor_indexes.toroidal_curvature())}
 
     def process_partition(self, x_range, y_range, z_range):
         for x in range(x_range[0], x_range[1]):         # pylint: disable=C0103,C0301

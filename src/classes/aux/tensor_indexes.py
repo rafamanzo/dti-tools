@@ -14,18 +14,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""Container for TensorStatistics class"""
+"""Container for TensorIndexes class"""
 
 import numpy as np # Linear algebra
 import math as m   # Basic calculations
 
 # pylint: disable=R0903,R0922
 
-class TensorStatistics(object):
-    """Calculates some tensor statistics"""
+class TensorIndexes(object):
+    """Calculates some tensor indexes"""
 
     def __init__(self, tensor):
-        super(TensorStatistics, self).__init__()
+        super(TensorIndexes, self).__init__()
         self.tensor = tensor
 
     def mean_diffusivity(self):

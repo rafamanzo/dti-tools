@@ -17,7 +17,7 @@
 """Container for MDThresholdMapStep class"""
 
 from src.classes.base.threshold_map_step import ThresholdMapStep
-from src.classes.aux.tensor_statistics import TensorStatistics
+from src.classes.aux.tensor_indexes import TensorIndexes
 
 class MDThresholdMapStep(ThresholdMapStep):
     """Maps voxels with mean diffusivity lower then a given threshold"""
@@ -26,5 +26,5 @@ class MDThresholdMapStep(ThresholdMapStep):
         super(MDThresholdMapStep, self).__init__("md")
 
     def check_for_threshold(self, tensor):
-        return (TensorStatistics(tensor).
+        return (TensorIndexes(tensor).
                     mean_diffusivity() <= self.threshold)

@@ -17,7 +17,7 @@
 """Container for FAThresholdMapStep class"""
 
 from src.classes.base.threshold_map_step import ThresholdMapStep
-from src.classes.aux.tensor_statistics import TensorStatistics
+from src.classes.aux.tensor_indexes import TensorIndexes
 
 class FAThresholdMapStep(ThresholdMapStep):
     """Maps voxels with fractional anisotropy higher then a given threshold"""
@@ -26,5 +26,5 @@ class FAThresholdMapStep(ThresholdMapStep):
         super(FAThresholdMapStep, self).__init__("fa")
 
     def check_for_threshold(self, tensor):
-        return (TensorStatistics(tensor).
+        return (TensorIndexes(tensor).
                     fractional_anisotropy() >= self.threshold)

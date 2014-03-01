@@ -26,7 +26,7 @@ import nibabel as nib # Necessary to mock the calls to it
 import numpy as np
 import matplotlib.pyplot as plt
 from src.classes.region_statistics_step import RegionStatisticsStep
-from src.classes.aux.tensor_statistics import TensorStatistics
+from src.classes.aux.tensor_indexes import TensorIndexes
 
 class RegionStatisticsStepTestCase(unittest.TestCase):
     def setUp(self):

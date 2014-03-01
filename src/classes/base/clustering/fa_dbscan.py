@@ -17,7 +17,7 @@
 """Container for FADBSCAN class"""
 
 from src.classes.base.clustering.tensor_statistics_dbscan import TensorStatisticsDBSCAN # pylint: disable=C0301
-from src.classes.aux.tensor_statistics import TensorStatistics
+from src.classes.aux.tensor_indexes import TensorIndexes
 
 # pylint: disable=R0903,R0922
 
@@ -28,4 +28,4 @@ class FADBSCAN(TensorStatisticsDBSCAN):
     """
 
     def calculate_value(self, point):
-        return TensorStatistics(self.tensor[point]).fractional_anisotropy()
+        return TensorIndexes(self.tensor[point]).fractional_anisotropy()
