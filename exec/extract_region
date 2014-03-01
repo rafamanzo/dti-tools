@@ -19,7 +19,7 @@
 import sys
 sys.path.append(sys.path[0][:-4])
 
-from src.classes.region_extractor import RegionExtractorStep
+from src.classes.region_extractor_step import RegionExtractorStep
 
 RegionExtractorStep().run()
 
