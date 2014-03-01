@@ -25,7 +25,7 @@ from src.classes.fa_clustering_step import FAClusteringStep
 
 import nibabel as nib # Necessary to mock the calls to it
 import numpy as np
-from src.classes.aux.clustering.fa_dbscan import FADBSCAN # Necessary to mock the calls to it
+from src.classes.base.clustering.fa_dbscan import FADBSCAN # Necessary to mock the calls to it
 
 class FAClusteringStepTestCase(unittest.TestCase):
     def setUp(self):

@@ -14,18 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""Container for FADBSCAN class"""
+"""Container for MaskDBSCAN class"""
 
-from src.classes.aux.clustering.tensor_statistics_dbscan import TensorStatisticsDBSCAN # pylint: disable=C0301
-from src.classes.aux.tensor_statistics import TensorStatistics
+from src.classes.base.clustering.base.dbscan import DBSCAN
 
 # pylint: disable=R0903,R0922
 
-class FADBSCAN(TensorStatisticsDBSCAN):
+class MaskDBSCAN(DBSCAN):
     """Implementation of the DBSCAN clustering algorithm
-       considering the FA difference between points
+       considering just the mask
 
     """
 
-    def calculate_value(self, point):
-        return TensorStatistics(self.tensor[point]).fractional_anisotropy()
+    def neighbourhood_criteria(self, centroid, point):
+        return True

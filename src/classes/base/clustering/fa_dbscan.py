@@ -14,26 +14,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-sys.path.append(sys.path[0][:-17])
+"""Container for FADBSCAN class"""
 
-import unittest
+from src.classes.base.clustering.tensor_statistics_dbscan import TensorStatisticsDBSCAN # pylint: disable=C0301
+from src.classes.aux.tensor_statistics import TensorStatistics
 
-from src.classes.aux.clustering.rd_dbscan import RDDBSCAN
+# pylint: disable=R0903,R0922
 
-import numpy as np    # Necessary for assertions
+class FADBSCAN(TensorStatisticsDBSCAN):
+    """Implementation of the DBSCAN clustering algorithm
+       considering the FA difference between points
 
-class RDDBSCANTestCase(unittest.TestCase):
-    def setUp(self):
-        self.shape = (2,2,2)
-        self.mask = np.ones(self.shape, dtype=np.int16)
-        self.tensor = np.zeros((2,2,2,6), dtype=np.int16)
-        self.mask[1][1][1] = 0
-        self.max_rd_difference = 0.1
-        self.rd_dbscan = RDDBSCAN(1,1,self.mask, self.shape, self.tensor, self.max_rd_difference)
+    """
 
-    def test_calculate_value(self):
-        error = 0.000000000000001
-
-        self.assertTrue((self.rd_dbscan.calculate_value((0,0,0)) - 0.0) <= error)
-        
+    def calculate_value(self, point):
+        return TensorStatistics(self.tensor[point]).fractional_anisotropy()

@@ -14,18 +14,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""Container for TCDBSCAN class"""
+"""Container for TVDBSCAN class"""
 
-from src.classes.aux.clustering.tensor_statistics_dbscan import TensorStatisticsDBSCAN # pylint: disable=C0301
+from src.classes.base.clustering.tensor_statistics_dbscan import TensorStatisticsDBSCAN # pylint: disable=C0301
 from src.classes.aux.tensor_statistics import TensorStatistics
 
 # pylint: disable=R0903,R0922
 
-class TCDBSCAN(TensorStatisticsDBSCAN):
+class TVDBSCAN(TensorStatisticsDBSCAN):
     """Implementation of the DBSCAN clustering algorithm
        considering the FA difference between points
 
     """
 
     def calculate_value(self, point):
-        return TensorStatistics(self.tensor[point]).toroidal_curvature()
+        return TensorStatistics(self.tensor[point]).toroidal_volume()

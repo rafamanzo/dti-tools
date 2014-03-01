@@ -18,7 +18,7 @@
 
 # disable complaints about Module 'numpy' has no 'zeros' member
 
-from src.classes.aux.clustering.tc_dbscan import TCDBSCAN
+from src.classes.base.clustering.tc_dbscan import TCDBSCAN
                                                      # Algorithm used for
                                                      #   clustering and noise
                                                      #   reduction

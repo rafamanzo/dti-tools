@@ -18,7 +18,7 @@
 
 # disable complaints about Module 'numpy' has no 'zeros' member
 
-from src.classes.aux.clustering.rd_dbscan import RDDBSCAN
+from src.classes.base.clustering.rd_dbscan import RDDBSCAN
                                                      # Algorithm used for
                                                      #   clustering and noise
                                                      #   reduction

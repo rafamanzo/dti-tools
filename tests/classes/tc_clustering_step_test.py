@@ -25,7 +25,7 @@ from src.classes.tc_clustering_step import TCClusteringStep
 
 import nibabel as nib # Necessary to mock the calls to it
 import numpy as np
-from src.classes.aux.clustering.tc_dbscan import TCDBSCAN # Necessary to mock the calls to it
+from src.classes.base.clustering.tc_dbscan import TCDBSCAN # Necessary to mock the calls to it
 
 class TCClusteringStepTestCase(unittest.TestCase):
     def setUp(self):

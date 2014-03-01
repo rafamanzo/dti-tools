@@ -14,18 +14,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""Container for RDDBSCAN class"""
+import sys
+sys.path.append(sys.path[0][:-17])
 
-from src.classes.aux.clustering.tensor_statistics_dbscan import TensorStatisticsDBSCAN # pylint: disable=C0301
-from src.classes.aux.tensor_statistics import TensorStatistics
+import unittest
 
-# pylint: disable=R0903,R0922
+from src.classes.base.clustering.tc_dbscan import TCDBSCAN
 
-class RDDBSCAN(TensorStatisticsDBSCAN):
-    """Implementation of the DBSCAN clustering algorithm
-       considering the RD difference between points
+import numpy as np    # Necessary for assertions
 
-    """
+class TCDBSCANTestCase(unittest.TestCase):
+    def setUp(self):
+        self.shape = (2,2,2)
+        self.mask = np.ones(self.shape, dtype=np.int16)
+        self.tensor = np.zeros((2,2,2,6), dtype=np.int16)
+        self.mask[1][1][1] = 0
+        self.max_value_difference = 0.1
+        self.tensor_statistics_dbscan = TCDBSCAN(1,1,self.mask, self.shape, self.tensor, self.max_value_difference)
 
-    def calculate_value(self, point):
-        return TensorStatistics(self.tensor[point]).radial_diffusivity()
+    def test_calculate_value(self):
+        self.tensor_statistics_dbscan.calculate_value((0,0,0))
+        

@@ -14,17 +14,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""Container for MaskDBSCAN class"""
+import sys
+sys.path.append(sys.path[0][:-17])
 
-from src.classes.aux.clustering.base.dbscan import DBSCAN
+import unittest
 
-# pylint: disable=R0903,R0922
+from src.classes.base.clustering.mask_dbscan import MaskDBSCAN
 
-class MaskDBSCAN(DBSCAN):
-    """Implementation of the DBSCAN clustering algorithm
-       considering just the mask
+import numpy as np    # Necessary for assertions
 
-    """
+class MaskDBSCANTestCase(unittest.TestCase):
+    def setUp(self):
+        self.shape = (2,2,2)
+        self.mask = np.ones(self.shape, dtype=np.int16)
+        self.mask[1][1][1] = 0
+        self.mask_dbscan = MaskDBSCAN(1,1,self.mask, self.shape)
 
-    def neighbourhood_criteria(self, centroid, point):
-        return True
+    def test_neighbourhood_criteria(self):
+        self.assertTrue(self.mask_dbscan.neighbourhood_criteria((0,0,0), (0,0,0)))

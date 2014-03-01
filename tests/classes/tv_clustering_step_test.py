@@ -25,7 +25,7 @@ from src.classes.tv_clustering_step import TVClusteringStep
 
 import nibabel as nib # Necessary to mock the calls to it
 import numpy as np
-from src.classes.aux.clustering.tv_dbscan import TVDBSCAN # Necessary to mock the calls to it
+from src.classes.base.clustering.tv_dbscan import TVDBSCAN # Necessary to mock the calls to it
 
 class TVClusteringStepTestCase(unittest.TestCase):
     def setUp(self):

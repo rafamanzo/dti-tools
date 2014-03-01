@@ -18,7 +18,7 @@
 
 # disable complaints about Module 'numpy' has no 'zeros' member
 
-from src.classes.aux.clustering.tv_dbscan import TVDBSCAN
+from src.classes.base.clustering.tv_dbscan import TVDBSCAN
                                                      # Algorithm used for
                                                      #   clustering and noise
                                                      #   reduction

@@ -18,7 +18,7 @@
 
 from multiprocessing import cpu_count, Process, JoinableQueue, Event
 
-from src.classes.aux.clustering.base.dbscan_expansor import DBSCANExpansor
+from src.classes.base.clustering.base.dbscan_expansor import DBSCANExpansor
 
 class DBSCANExpansorManager(object):
     """docstring for DBSCANExpansorManager"""

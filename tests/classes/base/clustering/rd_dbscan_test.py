@@ -19,21 +19,21 @@ sys.path.append(sys.path[0][:-17])
 
 import unittest
 
-from src.classes.aux.clustering.fa_dbscan import FADBSCAN
+from src.classes.base.clustering.rd_dbscan import RDDBSCAN
 
 import numpy as np    # Necessary for assertions
 
-class FADBSCANTestCase(unittest.TestCase):
+class RDDBSCANTestCase(unittest.TestCase):
     def setUp(self):
         self.shape = (2,2,2)
         self.mask = np.ones(self.shape, dtype=np.int16)
         self.tensor = np.zeros((2,2,2,6), dtype=np.int16)
         self.mask[1][1][1] = 0
-        self.max_value_difference = 0.1
-        self.tensor_statistics_dbscan = FADBSCAN(1,1,self.mask, self.shape, self.tensor, self.max_value_difference)
+        self.max_rd_difference = 0.1
+        self.rd_dbscan = RDDBSCAN(1,1,self.mask, self.shape, self.tensor, self.max_rd_difference)
 
     def test_calculate_value(self):
         error = 0.000000000000001
 
-        self.assertTrue((self.tensor_statistics_dbscan.calculate_value((0,0,0)) - 0.0) <= error)
+        self.assertTrue((self.rd_dbscan.calculate_value((0,0,0)) - 0.0) <= error)
         

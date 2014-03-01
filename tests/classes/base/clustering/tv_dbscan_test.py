@@ -19,19 +19,21 @@ sys.path.append(sys.path[0][:-17])
 
 import unittest
 
-from src.classes.aux.clustering.tc_dbscan import TCDBSCAN
+from src.classes.base.clustering.tv_dbscan import TVDBSCAN
 
 import numpy as np    # Necessary for assertions
 
-class TCDBSCANTestCase(unittest.TestCase):
+class TVDBSCANTestCase(unittest.TestCase):
     def setUp(self):
         self.shape = (2,2,2)
         self.mask = np.ones(self.shape, dtype=np.int16)
         self.tensor = np.zeros((2,2,2,6), dtype=np.int16)
         self.mask[1][1][1] = 0
         self.max_value_difference = 0.1
-        self.tensor_statistics_dbscan = TCDBSCAN(1,1,self.mask, self.shape, self.tensor, self.max_value_difference)
+        self.tensor_statistics_dbscan = TVDBSCAN(1,1,self.mask, self.shape, self.tensor, self.max_value_difference)
 
     def test_calculate_value(self):
-        self.tensor_statistics_dbscan.calculate_value((0,0,0))
+        error = 0.000000000000001
+
+        self.assertTrue((self.tensor_statistics_dbscan.calculate_value((0,0,0)) - 0.0) <= error)
         

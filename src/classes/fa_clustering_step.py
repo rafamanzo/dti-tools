@@ -18,7 +18,7 @@
 
 # disable complaints about Module 'numpy' has no 'zeros' member
 
-from src.classes.aux.clustering.fa_dbscan import FADBSCAN
+from src.classes.base.clustering.fa_dbscan import FADBSCAN
                                                      # Algorithm used for
                                                      #   clustering and noise
                                                      #   reduction

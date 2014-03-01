@@ -20,9 +20,9 @@ from multiprocessing import cpu_count
 from threading import Thread
 import time
 
-from src.classes.aux.clustering.base.dbscan_expansor_manager import DBSCANExpansorManager # pylint: disable=C0301
-from src.classes.aux.clustering.base.dbscan_results_manager import DBSCANResultsManager # pylint: disable=C0301
-from src.classes.aux.clustering.base.dbscan_base import DBSCANBase
+from src.classes.base.clustering.base.dbscan_expansor_manager import DBSCANExpansorManager # pylint: disable=C0301
+from src.classes.base.clustering.base.dbscan_results_manager import DBSCANResultsManager # pylint: disable=C0301
+from src.classes.base.clustering.base.dbscan_base import DBSCANBase
 
 # pylint: disable=R0903,R0922
 

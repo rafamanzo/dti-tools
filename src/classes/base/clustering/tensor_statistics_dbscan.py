@@ -16,7 +16,7 @@
 
 """Container for TensorStatisticsDBSCAN class"""
 
-from src.classes.aux.clustering.base.dbscan import DBSCAN
+from src.classes.base.clustering.base.dbscan import DBSCAN
 
 import math as m
 import numpy as np

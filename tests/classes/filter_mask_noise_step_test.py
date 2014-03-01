@@ -23,7 +23,7 @@ from unittest.mock import Mock
 from src.classes.filter_mask_noise_step import FilterMaskNoiseStep
 
 import nibabel as nib # Necessary to mock the calls to it
-from src.classes.aux.clustering.base.dbscan import DBSCAN # Necessary to mock the calls to it
+from src.classes.base.clustering.base.dbscan import DBSCAN # Necessary to mock the calls to it
 
 class FilterMaskNoiseStepTestCase(unittest.TestCase):
     def setUp(self):

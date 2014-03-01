@@ -25,7 +25,7 @@ from src.classes.rd_clustering_step import RDClusteringStep
 
 import nibabel as nib # Necessary to mock the calls to it
 import numpy as np
-from src.classes.aux.clustering.rd_dbscan import RDDBSCAN # Necessary to mock the calls to it
+from src.classes.base.clustering.rd_dbscan import RDDBSCAN # Necessary to mock the calls to it
 
 class RDClusteringStepTestCase(unittest.TestCase):
     def setUp(self):
