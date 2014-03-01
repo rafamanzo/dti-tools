@@ -23,7 +23,7 @@ from threading import Thread
 
 from src.classes.base.step import Step
 
-class CPUParallelStep(Step): # pylint: disable-msg=R0903
+class CPUParallelStep(Step): # pylint: disable=R0903
     """Abstract class to represent pipeline steps that can be
        parallelized on CPU
 
@@ -96,7 +96,7 @@ class CPUParallelStep(Step): # pylint: disable-msg=R0903
         while not self.queue.empty():
             self.consume_product(self.queue.get())
 
-    def workers_count(self): # pylint: disable-msg=R0201
+    def workers_count(self): # pylint: disable=R0201
         """Returns the cpu count"""
 
         return multiprocessing.cpu_count()

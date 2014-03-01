@@ -19,7 +19,7 @@
 import numpy as np # Linear algebra
 import math as m   # Basic calculations
 
-# pylint: disable-msg=R0903,R0922
+# pylint: disable=R0903,R0922
 
 class TensorStatistics(object):
     """Calculates some tensor statistics"""
@@ -140,7 +140,7 @@ class TensorStatistics(object):
 
     def __eigensystem(self):
         """Tensor's eigensystem ordered by eigenvalues"""
-        eigenvalues, eigenevctors = np.linalg.eig(self.__tensor_matrix()) # pylint: disable-msg=E1101,C0301
+        eigenvalues, eigenevctors = np.linalg.eig(self.__tensor_matrix()) # pylint: disable=E1101,C0301
 
         # descendat order
         ordered_indexes = list(reversed(eigenvalues.argsort()))
@@ -149,7 +149,7 @@ class TensorStatistics(object):
 
     def __tensor_matrix(self):
         """Returns the compact tensor array into it's full symetric matrix"""
-        return np.array([ # pylint: disable-msg=E1101
+        return np.array([ # pylint: disable=E1101
                          [self.tensor[0], self.tensor[1], self.tensor[2]],
                          [self.tensor[1], self.tensor[3], self.tensor[4]],
                          [self.tensor[2], self.tensor[4], self.tensor[5]]

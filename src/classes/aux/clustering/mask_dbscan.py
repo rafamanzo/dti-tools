@@ -18,7 +18,7 @@
 
 from src.classes.aux.clustering.base.dbscan import DBSCAN
 
-# pylint: disable-msg=R0903,R0922
+# pylint: disable=R0903,R0922
 
 class MaskDBSCAN(DBSCAN):
     """Implementation of the DBSCAN clustering algorithm

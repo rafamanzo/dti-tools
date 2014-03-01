@@ -35,7 +35,7 @@ class ThresholdMapStep(CPUParallelStep):
         self.tensor_data = [[[[]]]]
         self.mask_data = [[[[]]]]
         self.threshold_mask = [[[]]]
-        self.affine = np.eye(4)      # pylint: disable-msg=E1101
+        self.affine = np.eye(4)      # pylint: disable=E1101
 
     def validate_args(self):
         if len(sys.argv) != 4:
@@ -53,19 +53,19 @@ class ThresholdMapStep(CPUParallelStep):
         self.threshold = float(sys.argv[3])
         self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
         self.mask_data = mask.get_data()
-        self.threshold_mask = np.zeros(self.shape,  # pylint: disable-msg=E1101
-                                    dtype=np.uint8) # pylint: disable-msg=E1101
+        self.threshold_mask = np.zeros(self.shape,  # pylint: disable=E1101
+                                    dtype=np.uint8) # pylint: disable=E1101
 
     def check_for_threshold(self, tensor):
         """checks for wheter a givens tensor should be filtered"""
         raise NotImplementedError("Please implement this method")
 
     def process_partition(self, x_range, y_range, z_range):
-        for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
-            for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
-                for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
+        for x in range(x_range[0], x_range[1]):         # pylint: disable=C0103,C0301
+            for y in range(y_range[0], y_range[1]):     # pylint: disable=C0103,C0301
+                for z in range(z_range[0], z_range[1]): # pylint: disable=C0103,C0301
                     if self.mask_data[x][y][z]:
-                        if (self.check_for_threshold(self.tensor_data[x][y][z])):  # pylint: disable-msg=C0301
+                        if (self.check_for_threshold(self.tensor_data[x][y][z])):  # pylint: disable=C0301
                             self.queue.put((x, y, z))
 
     def consume_product(self, product):
@@ -73,6 +73,6 @@ class ThresholdMapStep(CPUParallelStep):
 
     def save(self):
         isotropy_img = nib.Nifti1Image(
-                            self.threshold_mask, # pylint: disable-msg=E1101
-                            self.affine)    # pylint: disable-msg=E1101
+                            self.threshold_mask, # pylint: disable=E1101
+                            self.affine)    # pylint: disable=E1101
         isotropy_img.to_filename('%s_mask.nii.gz'%self.file_prefix)

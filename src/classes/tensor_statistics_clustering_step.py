@@ -34,10 +34,10 @@ class TensorStatisticsClusteringStep(Step):
     def __init__(self, filename_prefix):
         self.min_pts = 0
         self.eps = 0
-        self.mask = np.zeros((0)) # pylint: disable-msg=E1101
+        self.mask = np.zeros((0)) # pylint: disable=E1101
         self.clusters = []
         self.maximum_fa_difference = -1.0
-        self.tensor = np.zeros((0, 0, 0)) # pylint: disable-msg=E1101
+        self.tensor = np.zeros((0, 0, 0)) # pylint: disable=E1101
         self.filename_prefix = filename_prefix
 
     def validate_args(self):
@@ -87,7 +87,7 @@ class TensorStatisticsClusteringStep(Step):
     def __convert_clusters_to_mask(self):
         """Gets clusters from DBSCAN and converts them into a mask"""
 
-        mask = np.zeros(self.shape(), dtype=np.uint32) # pylint: disable-msg=E1101,C0301
+        mask = np.zeros(self.shape(), dtype=np.uint32) # pylint: disable=E1101,C0301
 
         cluster_number = 1
         for cluster in self.clusters:

@@ -22,7 +22,7 @@ from multiprocessing.queues import Empty
 
 class DBSCANExpansor(object):
     """docstring for DBSCANExpansor"""
-    def __init__(self, expansor_id, results_manager, base, processing_finished, expandables_queue, idling): # pylint: disable-msg=C0301
+    def __init__(self, expansor_id, results_manager, base, processing_finished, expandables_queue, idling): # pylint: disable=C0301
         self.__id = expansor_id
         self.__processing_finished = processing_finished
         self.__expandables_queue = expandables_queue
@@ -36,12 +36,12 @@ class DBSCANExpansor(object):
         neighbour = point
 
         for neighbour in neighbourhood:
-            if(self.__base.get_result(neighbour) == 0): # pylint: disable-msg=C0301
+            if(self.__base.get_result(neighbour) == 0): # pylint: disable=C0301
                 self.__base.set_result(neighbour, 1)
                 self.__results_manager.add_result(self.__id, neighbour, 1)
-                neighbour_neighbourhood = self.__base.get_neighbourhood(neighbour) # pylint: disable-msg=C0301
+                neighbour_neighbourhood = self.__base.get_neighbourhood(neighbour) # pylint: disable=C0301
                 if len(neighbour_neighbourhood) >= self.__base.get_min_pts():
-                    self.__expandables_queue.put((neighbour, neighbour_neighbourhood)) # pylint: disable-msg=C0301
+                    self.__expandables_queue.put((neighbour, neighbour_neighbourhood)) # pylint: disable=C0301
 
     def __expansor(self):
         """Expands a neighbourhood until it is not possible"""
@@ -60,7 +60,7 @@ class DBSCANExpansor(object):
         """Updates the results map"""
 
         while not self.__processing_finished.is_set():
-            presence, resource = self.__results_manager.get_result_update_for(self.__id) # pylint: disable-msg=C0301
+            presence, resource = self.__results_manager.get_result_update_for(self.__id) # pylint: disable=C0301
 
             if presence:
                 self.__base.set_result(resource[0], resource[1])

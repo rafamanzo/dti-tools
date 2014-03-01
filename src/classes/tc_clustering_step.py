@@ -22,7 +22,7 @@ from src.classes.aux.clustering.tc_dbscan import TCDBSCAN
                                                      # Algorithm used for
                                                      #   clustering and noise
                                                      #   reduction
-from src.classes.tensor_statistics_clustering_step import TensorStatisticsClusteringStep # pylint: disable-msg=C0301
+from src.classes.tensor_statistics_clustering_step import TensorStatisticsClusteringStep # pylint: disable=C0301
 
 class TCClusteringStep(TensorStatisticsClusteringStep):
     """Applying the DBSCAN algorithm it elimates clusters points

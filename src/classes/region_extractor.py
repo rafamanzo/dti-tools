@@ -29,8 +29,8 @@ class RegionExtractorStep(CPUParallelStep):
     def __init__(self):
         super(RegionExtractorStep, self).__init__()
         self.__region = 1
-        self.__mask = np.zeros((0, 0, 0))         # pylint: disable-msg=E1101
-        self.__extracted = np.zeros((0, 0, 0, 0)) # pylint: disable-msg=E1101
+        self.__mask = np.zeros((0, 0, 0))         # pylint: disable=E1101
+        self.__extracted = np.zeros((0, 0, 0, 0)) # pylint: disable=E1101
 
     def validate_args(self):
         if len(sys.argv) != 3:
@@ -51,9 +51,9 @@ class RegionExtractorStep(CPUParallelStep):
     def process_partition(self, x_range, y_range, z_range):
         mask_data = self.__mask.get_data()
 
-        for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
-            for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
-                for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
+        for x in range(x_range[0], x_range[1]):         # pylint: disable=C0103,C0301
+            for y in range(y_range[0], y_range[1]):     # pylint: disable=C0103,C0301
+                for z in range(z_range[0], z_range[1]): # pylint: disable=C0103,C0301
                     if mask_data[(x, y, z)] == self.__region:
                         self.queue.put((x, y, z))
 

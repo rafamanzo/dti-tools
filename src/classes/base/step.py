@@ -19,19 +19,19 @@
 class Step(object):
     """Abstract class that defines how a pipeline step should look like"""
 
-    def validate_args(self): # pylint: disable-msg=R0201
+    def validate_args(self): # pylint: disable=R0201
         """Checks wether the given arguments are valid"""
         return True
 
-    def load_data(self): # pylint: disable-msg=R0201
+    def load_data(self): # pylint: disable=R0201
         """Loads any data necessary during the step processing"""
         return True
 
-    def save(self): # pylint: disable-msg=R0201
+    def save(self): # pylint: disable=R0201
         """Saves the results of the processing"""
         return True
 
-    def process(self): # pylint: disable-msg=R0201
+    def process(self): # pylint: disable=R0201
         """Do the processing"""
         raise NotImplementedError("Please implement this method")
 

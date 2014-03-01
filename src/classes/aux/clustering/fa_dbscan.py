@@ -16,10 +16,10 @@
 
 """Container for FADBSCAN class"""
 
-from src.classes.aux.clustering.tensor_statistics_dbscan import TensorStatisticsDBSCAN # pylint: disable-msg=C0301
+from src.classes.aux.clustering.tensor_statistics_dbscan import TensorStatisticsDBSCAN # pylint: disable=C0301
 from src.classes.aux.tensor_statistics import TensorStatistics
 
-# pylint: disable-msg=R0903,R0922
+# pylint: disable=R0903,R0922
 
 class FADBSCAN(TensorStatisticsDBSCAN):
     """Implementation of the DBSCAN clustering algorithm

@@ -55,8 +55,8 @@ class FilterMaskNoiseStep(Step):
         self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
         self.eps = int(sys.argv[2])
         self.min_pts = int(sys.argv[3])
-        self.filtered_mask = np.zeros(self.shape,    # pylint: disable-msg=E1101
-                                      dtype=np.uint8)# pylint: disable-msg=E1101
+        self.filtered_mask = np.zeros(self.shape,    # pylint: disable=E1101
+                                      dtype=np.uint8)# pylint: disable=E1101
 
     def process(self):
         dbs = MaskDBSCAN(self.eps, self.min_pts, self.mask_data, self.shape)
@@ -65,16 +65,16 @@ class FilterMaskNoiseStep(Step):
 
     def save(self):
         filtered_mask_img = nib.Nifti1Image(
-                                self.filtered_mask, # pylint: disable-msg=E1101
-                                np.eye(4))          # pylint: disable-msg=E1101
+                                self.filtered_mask, # pylint: disable=E1101
+                                np.eye(4))          # pylint: disable=E1101
         filtered_mask_img.to_filename('filtered_'+sys.argv[1].split('/')[-1])
 
     def __convert_dbs_result_to_mask(self, dbs_result):
         """Gets the result from DBSCAN and converts it into a mask"""
 
-        for x in range(0, self.shape[0]):          # pylint: disable-msg=C0103,C0301
-            for y in range(0, self.shape[1]):      # pylint: disable-msg=C0103,C0301
-                for z in range(0, self.shape[2]):  # pylint: disable-msg=C0103,C0301
+        for x in range(0, self.shape[0]):          # pylint: disable=C0103,C0301
+            for y in range(0, self.shape[1]):      # pylint: disable=C0103,C0301
+                for z in range(0, self.shape[2]):  # pylint: disable=C0103,C0301
                     if dbs_result[x][y][z] == 1:
                         self.filtered_mask[x][y][z] = 1
                     else:

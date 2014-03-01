@@ -21,7 +21,7 @@ from src.classes.aux.clustering.base.dbscan import DBSCAN
 import math as m
 import numpy as np
 
-# pylint: disable-msg=R0903,R0922
+# pylint: disable=R0903,R0922
 
 class TensorStatisticsDBSCAN(DBSCAN):
     """Implementation of the DBSCAN clustering algorithm
@@ -29,11 +29,11 @@ class TensorStatisticsDBSCAN(DBSCAN):
 
     """
 
-    def __init__(self, eps, min_pts, mask, shape, tensor, max_value_difference): # pylint: disable-msg=R0913, C0301
+    def __init__(self, eps, min_pts, mask, shape, tensor, max_value_difference): # pylint: disable=R0913, C0301
         super(TensorStatisticsDBSCAN, self).__init__(eps, min_pts, mask, shape)
         self.tensor = tensor
         self.__max_value_difference = max_value_difference
-        self.__memoized_value = np.ones(shape, dtype=np.float16)*(-1)  # pylint: disable-msg=E1101,C0301
+        self.__memoized_value = np.ones(shape, dtype=np.float16)*(-1)  # pylint: disable=E1101,C0301
 
     def neighbourhood_criteria(self, centroid, point):
         centroid_value = self.__get_value(centroid)

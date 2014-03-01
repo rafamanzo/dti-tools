@@ -40,8 +40,8 @@ class RegionStatisticsStep(CPUParallelStep):
         self.rd_results = {}
         self.tv_results = {}
         self.tc_results = {}
-        self.mask = np.zeros((0, 0, 0))      # pylint: disable-msg=E1101
-        self.tensor = np.zeros((0, 0, 0, 0)) # pylint: disable-msg=E1101
+        self.mask = np.zeros((0, 0, 0))      # pylint: disable=E1101
+        self.tensor = np.zeros((0, 0, 0, 0)) # pylint: disable=E1101
         self.shape = (0, 0, 0)
 
     def validate_args(self):
@@ -74,9 +74,9 @@ class RegionStatisticsStep(CPUParallelStep):
                                   tensor_statistics.toroidal_curvature())}
 
     def process_partition(self, x_range, y_range, z_range):
-        for x in range(x_range[0], x_range[1]):         # pylint: disable-msg=C0103,C0301
-            for y in range(y_range[0], y_range[1]):     # pylint: disable-msg=C0103,C0301
-                for z in range(z_range[0], z_range[1]): # pylint: disable-msg=C0103,C0301
+        for x in range(x_range[0], x_range[1]):         # pylint: disable=C0103,C0301
+            for y in range(y_range[0], y_range[1]):     # pylint: disable=C0103,C0301
+                for z in range(z_range[0], z_range[1]): # pylint: disable=C0103,C0301
                     if self.mask.get_data()[(x, y, z)] > 0:
                         self.queue.put(self.__get_point_results((x, y, z)))
 
@@ -127,29 +127,29 @@ class RegionStatisticsStep(CPUParallelStep):
 
         for region in self.regions.keys():
             region_sizes.append(len(self.regions[region]))
-            md_mean = np.mean(self.md_results[region]) # pylint: disable-msg=E1101,C0301
+            md_mean = np.mean(self.md_results[region]) # pylint: disable=E1101,C0301
             md_means.append(md_mean)
-            fa_mean = np.mean(self.fa_results[region]) # pylint: disable-msg=E1101,C0301
+            fa_mean = np.mean(self.fa_results[region]) # pylint: disable=E1101,C0301
             fa_means.append(fa_mean)
-            rd_mean = np.mean(self.rd_results[region]) # pylint: disable-msg=E1101,C0301
+            rd_mean = np.mean(self.rd_results[region]) # pylint: disable=E1101,C0301
             rd_means.append(rd_mean)
-            tc_mean = np.mean(self.tc_results[region]) # pylint: disable-msg=E1101,C0301
+            tc_mean = np.mean(self.tc_results[region]) # pylint: disable=E1101,C0301
             tc_means.append(tc_mean)
-            tv_mean = np.mean(self.tv_results[region]) # pylint: disable-msg=E1101,C0301
+            tv_mean = np.mean(self.tv_results[region]) # pylint: disable=E1101,C0301
             tv_means.append(tv_mean)
 
             values = (region,
                       len(self.regions[region]),
                       md_mean,
-                      np.std(self.md_results[region]), # pylint: disable-msg=E1101,C0301
+                      np.std(self.md_results[region]), # pylint: disable=E1101,C0301
                       fa_mean,
-                      np.std(self.fa_results[region]), # pylint: disable-msg=E1101,C0301
+                      np.std(self.fa_results[region]), # pylint: disable=E1101,C0301
                       rd_mean,
-                      np.std(self.rd_results[region]), # pylint: disable-msg=E1101,C0301
+                      np.std(self.rd_results[region]), # pylint: disable=E1101,C0301
                       tc_mean,
-                      np.std(self.tv_results[region]), # pylint: disable-msg=E1101,C0301
+                      np.std(self.tv_results[region]), # pylint: disable=E1101,C0301
                       tv_mean,
-                      np.std(self.tc_results[region])) # pylint: disable-msg=E1101,C0301
+                      np.std(self.tc_results[region])) # pylint: disable=E1101,C0301
 
             out.write(("%5d \t | %8d \t | %2.7f \t |"+
                       " %2.6f \t | %2.7f \t | %2.7f \t |"+

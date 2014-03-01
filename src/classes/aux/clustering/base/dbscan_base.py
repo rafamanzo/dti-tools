@@ -26,8 +26,8 @@ class DBSCANBase(object):
         self.__min_pts = min_pts
         self.__mask = mask
         self.__shape = shape
-        self.__result = np.zeros(self.__shape,  # pylint: disable-msg=E1101
-                                 dtype=np.int8) # pylint: disable-msg=E1101
+        self.__result = np.zeros(self.__shape,  # pylint: disable=E1101
+                                 dtype=np.int8) # pylint: disable=E1101
         self.__neighbourhood_criteria = neighbourhood_criteria
 
     def set_result(self, point, result):
@@ -46,11 +46,11 @@ class DBSCANBase(object):
         """Receive a point and returns a set with it's neighbourhood"""
         neighbourhood = {point}
 
-        for x in range(max((point[0] - self.__eps, 0)),                       # pylint: disable-msg=C0103,C0301
+        for x in range(max((point[0] - self.__eps, 0)),                       # pylint: disable=C0103,C0301
                        min(self.__shape[0], point[0] + self.__eps + 1)):
-            for y in range(max((point[1] - self.__eps, 0)),                   # pylint: disable-msg=C0103,C0301
+            for y in range(max((point[1] - self.__eps, 0)),                   # pylint: disable=C0103,C0301
                            min(self.__shape[1], point[1] + self.__eps + 1)):
-                for z in range(max((point[2] - self.__eps, 0)),               # pylint: disable-msg=C0103,C0301
+                for z in range(max((point[2] - self.__eps, 0)),               # pylint: disable=C0103,C0301
                                min(self.__shape[2], point[2] + self.__eps + 1)):
                     if (self.__mask[x][y][z] and
                             self.__neighbourhood_criteria(point, (x, y, z))):

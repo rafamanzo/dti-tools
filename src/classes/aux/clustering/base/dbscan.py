@@ -20,11 +20,11 @@ from multiprocessing import cpu_count
 from threading import Thread
 import time
 
-from src.classes.aux.clustering.base.dbscan_expansor_manager import DBSCANExpansorManager # pylint: disable-msg=C0301
-from src.classes.aux.clustering.base.dbscan_results_manager import DBSCANResultsManager # pylint: disable-msg=C0301
+from src.classes.aux.clustering.base.dbscan_expansor_manager import DBSCANExpansorManager # pylint: disable=C0301
+from src.classes.aux.clustering.base.dbscan_results_manager import DBSCANResultsManager # pylint: disable=C0301
 from src.classes.aux.clustering.base.dbscan_base import DBSCANBase
 
-# pylint: disable-msg=R0903,R0922
+# pylint: disable=R0903,R0922
 
 class DBSCAN(object):
     """Implementation of the DBSCAN clustering algorithm"""
@@ -104,21 +104,21 @@ class DBSCAN(object):
 
         self.__expansor_manager.start_expansors()
 
-        for x in range(0, self.__base.get_shape()[0]):         # pylint: disable-msg=C0103,C0301
-            for y in range(0, self.__base.get_shape()[1]):     # pylint: disable-msg=C0103,C0301
-                for z in range(0, self.__base.get_shape()[2]): # pylint: disable-msg=C0103,C0301
+        for x in range(0, self.__base.get_shape()[0]):         # pylint: disable=C0103,C0301
+            for y in range(0, self.__base.get_shape()[1]):     # pylint: disable=C0103,C0301
+                for z in range(0, self.__base.get_shape()[2]): # pylint: disable=C0103,C0301
                     if self.__base.get_result((x, y, z)) == 0:
                         neighbourhood = self.__base.get_neighbourhood((x, y, z))
                         if (len(neighbourhood) < self.__base.get_min_pts() or
                            self.__base.get_mask_val((x, y, z)) == 0 or
-                           not self.neighbourhood_criteria((x, y, z), (x, y, z))): # pylint: disable-msg=C0301
+                           not self.neighbourhood_criteria((x, y, z), (x, y, z))): # pylint: disable=C0301
                             self.__base.set_result((x, y, z), -1)
                             self.__results_manager.add_result(-1, (x, y, z), -1)
                         else:
                             self.__results_manager.wait_results_update()
                             self.__expand_cluster((x, y, z),
                                                   neighbourhood)
-                            if len(self.__current_cluster) >= self.__base.get_min_pts(): # pylint: disable-msg=C0301
+                            if len(self.__current_cluster) >= self.__base.get_min_pts(): # pylint: disable=C0301
                                 clusters.append(self.__current_cluster)
                             else:
                                 self.__discard_cluster((x, y, z),
