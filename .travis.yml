@@ -5,4 +5,4 @@ install:
   - "pip install numpy --use-mirrors"
   - "./dev/dependencies.sh"
 
-script: "./dev/tests.sh"
+script: "nosetests --with-coverage --cover-branches --cover-package=./ --cover-html"
