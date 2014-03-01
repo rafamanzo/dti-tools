@@ -38,7 +38,7 @@ class RegionStatisticsStepTestCase(unittest.TestCase):
             self.region_statistics_step.validate_args()
         self.assertEqual(cm.exception.code, 1)
 
-        sys.argv = ['', sys.path[0]+"/classes/region_statistics_step_test.py", sys.path[0]+"/classes/region_statistics_step_test.py"]
+        sys.argv = ['', sys.path[0]+"/../tests/classes/region_statistics_step_test.py", sys.path[0]+"/../tests/classes/region_statistics_step_test.py"]
         self.assertTrue(self.region_statistics_step.validate_args())
 
     def test_load_data(self):

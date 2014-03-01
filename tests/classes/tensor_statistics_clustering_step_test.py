@@ -35,7 +35,7 @@ class TensorStatisticsClusteringStepTestCase(unittest.TestCase):
             self.tensor_statistics_clustering_step.validate_args()
         self.assertEqual(cm.exception.code, 1)
 
-        sys.argv = ['', sys.path[0]+"/classes/tensor_statistics_clustering_step_test.py", sys.path[0]+"/classes/tensor_statistics_clustering_step_test.py", '1', '26', '0.1']
+        sys.argv = ['', sys.path[0]+"/../tests/classes/tensor_statistics_clustering_step_test.py", sys.path[0]+"/../tests/classes/tensor_statistics_clustering_step_test.py", '1', '26', '0.1']
         self.assertTrue(self.tensor_statistics_clustering_step.validate_args())
 
     def test_load_data(self):
@@ -59,7 +59,7 @@ class TensorStatisticsClusteringStepTestCase(unittest.TestCase):
 
         self.tensor_statistics_clustering_step.process()
 
-        clusterer.fit.assert_called_with()        
+        clusterer.fit.assert_called_with()
 
     def test_save(self):
         sys.argv = ['', 'tensor', 'mask', '1', '26', '0.1']

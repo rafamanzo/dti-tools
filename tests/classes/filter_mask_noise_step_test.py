@@ -35,7 +35,7 @@ class FilterMaskNoiseStepTestCase(unittest.TestCase):
             self.filter_mask_noise_step.validate_args()
         self.assertEqual(cm.exception.code, 1)
 
-        sys.argv = ['', sys.path[0]+"/classes/filter_mask_noise_step_test.py", '1', '26']
+        sys.argv = ['', sys.path[0]+"/../tests/classes/filter_mask_noise_step_test.py", '1', '26']
 
         self.assertTrue(self.filter_mask_noise_step.validate_args())
 

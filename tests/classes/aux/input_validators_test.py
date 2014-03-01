@@ -28,7 +28,7 @@ class InputValidatorsTestCase(unittest.TestCase):
             validate_tensor(1)
         self.assertEqual(cm.exception.code, 1)
 
-        sys.argv[1] = sys.argv[1] = sys.path[0]+"/classes/aux/input_validators_test.py"
+        sys.argv[1] = sys.argv[1] = sys.path[0]+"/../tests/classes/aux/input_validators_test.py"
         self.assertTrue(validate_tensor(1))
 
     def test_validate_mask(self):
@@ -37,10 +37,10 @@ class InputValidatorsTestCase(unittest.TestCase):
             validate_mask(1)
         self.assertEqual(cm.exception.code, 1)
 
-        sys.argv[1] = sys.argv[1] = sys.path[0]+"/classes/aux/input_validators_test.py"
+        sys.argv[1] = sys.argv[1] = sys.path[0]+"/../tests/classes/aux/input_validators_test.py"
         self.assertTrue(validate_mask(1))
 
     def test_validate_tensor_and_mask(self):
-        sys.argv = ['', sys.path[0]+"/classes/aux/input_validators_test.py", sys.path[0]+"/classes/aux/input_validators_test.py"]
+        sys.argv = ['', sys.path[0]+"/../tests/classes/aux/input_validators_test.py", sys.path[0]+"/../tests/classes/aux/input_validators_test.py"]
 
         self.assertTrue(validate_tensor_and_mask(1,2))
