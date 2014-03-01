@@ -46,7 +46,7 @@ class RegionExtractorStep(CPUParallelStep):
         self.shape = (self.__mask.shape[0],
                       self.__mask.shape[1],
                       self.__mask.shape[2])
-        self.__extracted = np.zeros(self.shape, dtype=np.uint8)
+        self.__extracted = np.zeros(self.shape, dtype=np.uint32)
 
     def process_partition(self, x_range, y_range, z_range):
         mask_data = self.__mask.get_data()

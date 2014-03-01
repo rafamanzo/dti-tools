@@ -87,7 +87,7 @@ class TensorStatisticsClusteringStep(Step):
     def __convert_clusters_to_mask(self):
         """Gets clusters from DBSCAN and converts them into a mask"""
 
-        mask = np.zeros(self.shape(), dtype=np.uint64) # pylint: disable-msg=E1101,C0301
+        mask = np.zeros(self.shape(), dtype=np.uint32) # pylint: disable-msg=E1101,C0301
 
         cluster_number = 1
         for cluster in self.clusters:

@@ -2,3 +2,4 @@
 
 pip install -r requirements.txt --use-mirrors
 pip install coverage
+pip install nose
