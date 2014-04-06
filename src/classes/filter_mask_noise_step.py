@@ -39,6 +39,7 @@ class FilterMaskNoiseStep(Step):
         self.mask_data = []
         self.shape = (0)
         self.filtered_mask = []
+        self.affine = np.eye(4)
 
     def validate_args(self):
         if len(sys.argv) != 4:
@@ -51,7 +52,8 @@ class FilterMaskNoiseStep(Step):
 
     def load_data(self):
         mask = nib.load(str(sys.argv[1]))
-        self.mask_data = nib.load(str(sys.argv[1])).get_data()
+        self.mask_data = mask.get_data()
+        self.affine = mask.get_affine()
         self.shape = (mask.shape[0], mask.shape[1], mask.shape[2])
         self.eps = int(sys.argv[2])
         self.min_pts = int(sys.argv[3])
@@ -65,8 +67,8 @@ class FilterMaskNoiseStep(Step):
 
     def save(self):
         filtered_mask_img = nib.Nifti1Image(
-                                self.filtered_mask, # pylint: disable=E1101
-                                np.eye(4))          # pylint: disable=E1101
+                                self.filtered_mask,     # pylint: disable=E1101
+                                self.affine) # pylint: disable=E1101
         filtered_mask_img.to_filename('filtered_'+sys.argv[1].split('/')[-1])
 
     def __convert_dbs_result_to_mask(self, dbs_result):
