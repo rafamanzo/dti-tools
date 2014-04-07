@@ -99,6 +99,19 @@ class TensorIndexes(object):
         else:
             return 0.0
 
+    def log_euclidean_distance(self, matrix):
+        self_matrix = self.tensor_matrix()
+
+        return np.power(np.trace(np.power(np.log10(self_matrix) - np.log10(matrix), 2)), 1/2)
+
+    def tensor_matrix(self):
+        """Returns the compact tensor array into it's full symetric matrix"""
+        return np.array([ # pylint: disable=E1101
+                         [self.tensor[0], self.tensor[1], self.tensor[2]],
+                         [self.tensor[1], self.tensor[3], self.tensor[4]],
+                         [self.tensor[2], self.tensor[4], self.tensor[5]]
+                        ])
+
     def __argmax_tc(self): # Maybe the first and second derivates are faster
         """Searches for the angles that maximizes the tc value"""
 
@@ -140,17 +153,10 @@ class TensorIndexes(object):
 
     def __eigensystem(self):
         """Tensor's eigensystem ordered by eigenvalues"""
-        eigenvalues, eigenevctors = np.linalg.eig(self.__tensor_matrix()) # pylint: disable=E1101,C0301
+        eigenvalues, eigenevctors = np.linalg.eig(self.tensor_matrix()) # pylint: disable=E1101,C0301
 
         # descendat order
         ordered_indexes = list(reversed(eigenvalues.argsort()))
 
         return eigenvalues[ordered_indexes], eigenevctors[:, ordered_indexes]
 
-    def __tensor_matrix(self):
-        """Returns the compact tensor array into it's full symetric matrix"""
-        return np.array([ # pylint: disable=E1101
-                         [self.tensor[0], self.tensor[1], self.tensor[2]],
-                         [self.tensor[1], self.tensor[3], self.tensor[4]],
-                         [self.tensor[2], self.tensor[4], self.tensor[5]]
-                        ])
