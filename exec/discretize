@@ -19,8 +19,8 @@
 import sys
 sys.path.append(sys.path[0][:-4])
 
-from src.classes.fa_map_step import FAMapStep
+from src.classes.discretization_step import DiscretizationStep
 
-FAMapStep().run()
+DiscretizationStep().run()
 
 exit(0)
