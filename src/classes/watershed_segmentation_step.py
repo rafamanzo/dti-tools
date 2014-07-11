@@ -24,6 +24,7 @@ import numpy as np            # Nibabel is based on Numpy
 
 from src.classes.base.step import Step               # Base class
 from src.classes.aux.input_validators import validate_tensor_and_mask
+from queue import Queue
 
 class WatershedSegmentationStep(Step):
     """Applying the DBSCAN algorithm it elimates noise from a mask
@@ -35,6 +36,7 @@ class WatershedSegmentationStep(Step):
         self.shape = (0)
         self.watersheds = []
         self.affine = np.eye(4)
+        self.queue = Queue()
 
     def validate_args(self):
         if len(sys.argv) != 3:
@@ -57,12 +59,70 @@ class WatershedSegmentationStep(Step):
     def process(self):
         MASK = -2
         WSHED = 0
+        FICTITIOUS_VOXEL = (-1,-1,-1)
 
         current_label = 0
+        current_dist = 0
         img_d = np.zeros(self.shape,    # pylint: disable=E1101
                         dtype=np.int32) # pylint: disable=E1101
 
         sorted_pixels = __sort_pixels()
+
+        h_min = self.discretized_data.min()
+        h_max = self.discretized_data.max()
+
+        for h in range(h_min, h_max + 1):
+            for voxel in sorted_pixels[h]:
+                self.watersheds[voxel] = MASK
+
+                for neighbour in neighbourhood(voxel):
+                    if self.watersheds[neighbour] > 0 or self.watersheds[neighbour] == WSHED:
+                        img_d[p] = 1
+                        self.queue.put(p)
+                        break
+
+            current_dist = 1
+            self.queue.put(FICTITIOUS_VOXEL)
+
+            while True:
+                voxel = self.queue.get(block=False)
+
+                if voxel == FICTITIOUS_VOXEL:
+                    if self.queue.empty():
+                        break
+                    else:
+                        self.queue.put(FICTITIOUS_VOXEL)
+                        current_dist = current_dist + 1
+                        voxel = self.queue.get(block=False)
+
+                for neighbour in neighbourhood(voxel):
+                    if img_d[neighbour] < current_dist and (self.watersheds[neighbour] > 0 or elf.watersheds[neighbour] == WSHED):
+                        if self.watersheds[neighbour] > 0:
+                            if self.watersheds[voxel] == MASK or self.watersheds[voxel] == WSHED:
+                                self.watersheds[voxel] = self.watersheds[neighbour]
+                            elif self.watersheds[voxel] != self.watersheds[neighbour]:
+                                self.watersheds[voxel] = WSHED
+                        elif self.watersheds[voxel] == MASK:
+                            self.watersheds[voxel] = WSHED
+                    elif self.watersheds[neighbour] == MASK and img_d[neighbour] == 0:
+                        img_d[neighbour] = current_dist + 1
+                        self.queue.put(neighbour)
+
+            for voxel in sorted_pixels[h]:
+                img_d[voxel] = 0
+
+                if self.watersheds[voxel] == MASK:
+                    current_label = current_label + 1
+                    self.queue.put(voxel)
+                    self.watersheds[voxel] = current_label
+
+                while !self.queue.empty():
+                    voxel_1 = self.queue.get(block= False)
+
+                    for neighbour in neighbourhood(voxel_1):
+                        if self.watersheds[neighbour] == MASK:
+                            self.queue.put(neighbour)
+                            self.watersheds[neighbour] = current_label
 
     def save(self):
         file_prefix = sys.argv[1].split('/')[-1].split('.')[0]
@@ -72,27 +132,25 @@ class WatershedSegmentationStep(Step):
         watersheds_img.to_filename("%s_watersheds.nii.gz"%file_prefix)
 
     def __sort_pixels(self):
-        bin_count = self.discretized_data.max() + 1
-        hist = np.zeros(bin_count, dtype=np.uint32)
+        h_min = self.discretized_data.min()
+        h_max = self.discretized_data.max()
 
+        sorted_pixels = {i: [] for i in range(h_min, h_max + 1)}
         for x in range(0, self.shape[0]):         # pylint: disable=C0103,C0301
             for y in range(0, self.shape[1]):     # pylint: disable=C0103,C0301
                 for z in range(0, self.shape[2]): # pylint: disable=C0103,C0301
                     if self.mask_data[(x, y, z)] > 0:
                         value = self.discretized_data[(x, y, z)]
-                        hist[value] = hist[value] + 1
-
-        cumu_hist = hist
-        for i in range(1, bin_count):
-            cumu_hist[i] = cumu_hist[i] + cumu_hist[i - 1]
-
-        sorted_pixels = [None for i in range(self.shape[0]*self.shape[1]*self.shape[2])]
-        for x in range(0, self.shape[0]):         # pylint: disable=C0103,C0301
-            for y in range(0, self.shape[1]):     # pylint: disable=C0103,C0301
-                for z in range(0, self.shape[2]): # pylint: disable=C0103,C0301
-                    if self.mask_data[(x, y, z)] > 0:
-                        value = self.discretized_data[(x, y, z)]
-                        sorted_pixels[cumu_hist[value] - 1] = (x,y,z)
-                        cumu_hist[value] = cumu_hist[value] - 1
+                        sorted_pixels[value].append((x,y,z))
 
         return sorted_pixels
+
+    def __neighbourhood(self, voxel):
+        neighbourhood = []
+
+        for x in range(max(0,voxel[0] - 1), min(self.shape[0], voxel[0] + 2)):
+            for y in range(max(0,voxel[1] - 1), min(self.shape[1], voxel[1] + 2)):
+                for x in range(max(0,voxel[2] - 1), min(self.shape[2], voxel[2] + 2)):
+                    neighbourhood.append((x, y, z))
+
+        return neighbourhood
