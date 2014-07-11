@@ -78,8 +78,9 @@ class WatershedSegmentationStep(Step):
         for x in range(0, self.shape[0]):         # pylint: disable=C0103,C0301
             for y in range(0, self.shape[1]):     # pylint: disable=C0103,C0301
                 for z in range(0, self.shape[2]): # pylint: disable=C0103,C0301
-                    value = self.discretized_data[(x, y, z)]
-                    hist[value] = hist[value] + 1
+                    if self.mask_data[(x, y, z)] > 0:
+                        value = self.discretized_data[(x, y, z)]
+                        hist[value] = hist[value] + 1
 
         cumu_hist = hist
         for i in range(1, bin_count):
@@ -89,8 +90,9 @@ class WatershedSegmentationStep(Step):
         for x in range(0, self.shape[0]):         # pylint: disable=C0103,C0301
             for y in range(0, self.shape[1]):     # pylint: disable=C0103,C0301
                 for z in range(0, self.shape[2]): # pylint: disable=C0103,C0301
-                    value = self.discretized_data[(x, y, z)]
-                    sorted_pixels[cumu_hist[value] - 1] = (x,y,z)
-                    cumu_hist[value] = cumu_hist[value] - 1
+                    if self.mask_data[(x, y, z)] > 0:
+                        value = self.discretized_data[(x, y, z)]
+                        sorted_pixels[cumu_hist[value] - 1] = (x,y,z)
+                        cumu_hist[value] = cumu_hist[value] - 1
 
         return sorted_pixels
