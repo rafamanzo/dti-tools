@@ -48,7 +48,11 @@ class TensorIndexes(object):
                              m.pow(eigenvalue[1], 2) +
                              m.pow(eigenvalue[2], 2))
         if(denominator > 0):
-            return m.sqrt(3/2)*(numerator/denominator)
+            value = m.sqrt(3/2)*(numerator/denominator)
+            if value > 1.0:
+                return 0.0
+            else:
+                return value
         else:
             return 0.0
 
