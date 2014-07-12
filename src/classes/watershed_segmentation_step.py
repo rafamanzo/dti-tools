@@ -66,7 +66,7 @@ class WatershedSegmentationStep(Step):
         img_d = np.zeros(self.shape,    # pylint: disable=E1101
                         dtype=np.int32) # pylint: disable=E1101
 
-        sorted_pixels = __sort_pixels()
+        sorted_pixels = self.__sort_pixels()
 
         h_min = self.discretized_data.min()
         h_max = self.discretized_data.max()
@@ -75,10 +75,10 @@ class WatershedSegmentationStep(Step):
             for voxel in sorted_pixels[h]:
                 self.watersheds[voxel] = MASK
 
-                for neighbour in neighbourhood(voxel):
+                for neighbour in self.__neighbourhood(voxel):
                     if self.watersheds[neighbour] > 0 or self.watersheds[neighbour] == WSHED:
-                        img_d[p] = 1
-                        self.queue.put(p)
+                        img_d[voxel] = 1
+                        self.queue.put(voxel)
                         break
 
             current_dist = 1
@@ -95,8 +95,8 @@ class WatershedSegmentationStep(Step):
                         current_dist = current_dist + 1
                         voxel = self.queue.get(block=False)
 
-                for neighbour in neighbourhood(voxel):
-                    if img_d[neighbour] < current_dist and (self.watersheds[neighbour] > 0 or elf.watersheds[neighbour] == WSHED):
+                for neighbour in self.__neighbourhood(voxel):
+                    if img_d[neighbour] < current_dist and (self.watersheds[neighbour] > 0 or self.watersheds[neighbour] == WSHED):
                         if self.watersheds[neighbour] > 0:
                             if self.watersheds[voxel] == MASK or self.watersheds[voxel] == WSHED:
                                 self.watersheds[voxel] = self.watersheds[neighbour]
@@ -116,10 +116,10 @@ class WatershedSegmentationStep(Step):
                     self.queue.put(voxel)
                     self.watersheds[voxel] = current_label
 
-                while !self.queue.empty():
+                while not self.queue.empty():
                     voxel_1 = self.queue.get(block= False)
 
-                    for neighbour in neighbourhood(voxel_1):
+                    for neighbour in self.__neighbourhood(voxel_1):
                         if self.watersheds[neighbour] == MASK:
                             self.queue.put(neighbour)
                             self.watersheds[neighbour] = current_label
@@ -150,7 +150,7 @@ class WatershedSegmentationStep(Step):
 
         for x in range(max(0,voxel[0] - 1), min(self.shape[0], voxel[0] + 2)):
             for y in range(max(0,voxel[1] - 1), min(self.shape[1], voxel[1] + 2)):
-                for x in range(max(0,voxel[2] - 1), min(self.shape[2], voxel[2] + 2)):
+                for z in range(max(0,voxel[2] - 1), min(self.shape[2], voxel[2] + 2)):
                     neighbourhood.append((x, y, z))
 
         return neighbourhood
