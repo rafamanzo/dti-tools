@@ -125,6 +125,12 @@ class WatershedSegmentationStep(Step):
                             self.watersheds[neighbour] = current_label
 
     def save(self):
+        for x in range(0, self.shape[0]):         # pylint: disable=C0103,C0301
+            for y in range(0, self.shape[1]):     # pylint: disable=C0103,C0301
+                for z in range(0, self.shape[2]): # pylint: disable=C0103,C0301
+                    if self.mask_data[(x, y, z)] == 0:
+                        self.watersheds[(x, y, z)] = 0
+
         file_prefix = sys.argv[1].split('/')[-1].split('.')[0]
         watersheds_img = nib.Nifti1Image(
                                 self.watersheds,     # pylint: disable=E1101
