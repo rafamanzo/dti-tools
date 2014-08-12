@@ -19,8 +19,8 @@
 import sys
 sys.path.append(sys.path[0][:-4])
 
-from src.classes.md_map_step import MDMapStep
+from src.classes.md_threshold_map_step import MDThresholdMapStep
 
-MDMapStep().run()
+MDThresholdMapStep().run()
 
 exit(0)
