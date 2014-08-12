@@ -39,7 +39,7 @@ class TensorIndexes(object):
     def fractional_anisotropy(self):
         """Tensor's fractional anisotropy (FA)"""
         mean_diffusivity = self.mean_diffusivity()
-        eigenvalue, _ = self.__eigensystem()
+        eigenvalue, _ = self.eigensystem()
 
         numerator = m.sqrt(m.pow(eigenvalue[0] - mean_diffusivity, 2) +
                            m.pow(eigenvalue[1] - mean_diffusivity, 2) +
@@ -59,14 +59,14 @@ class TensorIndexes(object):
     def radial_diffusivity(self):
         """Tensor's radial diffusivity (RD)"""
 
-        eigenvalues, _ = self.__eigensystem()
+        eigenvalues, _ = self.eigensystem()
 
         return (eigenvalues[1] + eigenvalues[2]) / 2
 
     def toroidal_volume(self):
         """Tensor's toroidal volume (TV)"""
 
-        eigenvalues, _ = self.__eigensystem()
+        eigenvalues, _ = self.eigensystem()
 
         return ((m.pi / 3.0) *
                     eigenvalues[0] *
@@ -76,7 +76,7 @@ class TensorIndexes(object):
     def toroidal_curvature(self):
         """Tensor's toroidal curvature (TC)"""
 
-        eigenvalues, _ = self.__eigensystem()
+        eigenvalues, _ = self.eigensystem()
 
         phi = self.__argmax_tc()
         alpha_denominator = (4.0 * eigenvalues[0])
@@ -116,6 +116,15 @@ class TensorIndexes(object):
                          [self.tensor[2], self.tensor[4], self.tensor[5]]
                         ])
 
+    def eigensystem(self):
+        """Tensor's eigensystem ordered by eigenvalues"""
+        eigenvalues, eigenevctors = np.linalg.eig(self.tensor_matrix()) # pylint: disable=E1101,C0301
+
+        # descendat order
+        ordered_indexes = list(reversed(eigenvalues.argsort()))
+
+        return eigenvalues[ordered_indexes], eigenevctors[:, ordered_indexes]
+
     def __argmax_tc(self): # Maybe the first and second derivates are faster
         """Searches for the angles that maximizes the tc value"""
 
@@ -147,7 +156,7 @@ class TensorIndexes(object):
     def __torus_params(self):
         """Tensor's corresponding torus parameters"""
 
-        eigenvalues, _ = self.__eigensystem()
+        eigenvalues, _ = self.eigensystem()
 
         alpha = (2.0*eigenvalues[1] + eigenvalues[2])/4.0
         beta = eigenvalues[2]/4.0
@@ -155,12 +164,4 @@ class TensorIndexes(object):
 
         return (alpha, beta, gama)
 
-    def __eigensystem(self):
-        """Tensor's eigensystem ordered by eigenvalues"""
-        eigenvalues, eigenevctors = np.linalg.eig(self.tensor_matrix()) # pylint: disable=E1101,C0301
-
-        # descendat order
-        ordered_indexes = list(reversed(eigenvalues.argsort()))
-
-        return eigenvalues[ordered_indexes], eigenevctors[:, ordered_indexes]
 
