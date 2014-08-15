@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 # This file is part of Improving Tractogrophy
 # Copyright (C) 2013-2014 it's respectives authors (please see the AUTHORS file)
 #
@@ -14,18 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""Container for FAThresholdMapStep class"""
+import sys
+sys.path.append(sys.path[0][:-4])
 
-import sys                      # Makes possible to get the arguments
-from src.classes.base.threshold_map_step import ThresholdMapStep
-from src.classes.aux.tensor_indexes import TensorIndexes
+from src.classes.mask_minus_step import MaskMinusStep
 
-class FAThresholdMapStep(ThresholdMapStep):
-    """Maps voxels with fractional anisotropy higher then a given threshold"""
+MaskMinusStep().run()
 
-    def __init__(self):
-        super(FAThresholdMapStep, self).__init__("fa_%s" % sys.argv[3].replace(".", ""))
-
-    def check_for_threshold(self, tensor):
-        return (TensorIndexes(tensor).
-                    fractional_anisotropy() >= self.threshold)
+exit(0)
