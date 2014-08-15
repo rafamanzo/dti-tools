@@ -75,14 +75,14 @@ class EigenvaluesMapStep(CPUParallelStep):
         extracted_mask_img = nib.Nifti1Image(self.__e1_map,
                                              self.__mask.get_affine())
 
-        extracted_mask_img.to_filename("e1_map.nii.gz")
+        extracted_mask_img.to_filename("l1_map.nii.gz")
 
         extracted_mask_img = nib.Nifti1Image(self.__e2_map,
                                              self.__mask.get_affine())
 
-        extracted_mask_img.to_filename("e2_map.nii.gz")
+        extracted_mask_img.to_filename("l2_map.nii.gz")
 
         extracted_mask_img = nib.Nifti1Image(self.__e3_map,
                                              self.__mask.get_affine())
 
-        extracted_mask_img.to_filename("e3_map.nii.gz")
+        extracted_mask_img.to_filename("l3_map.nii.gz")
