@@ -102,5 +102,7 @@ class MapRegionHistogramStep(CPUParallelStep):
         if self.__title != "":
             plt.title(self.__title)
 
+        plt.gcf().set_size_inches(16, 10.24)
+
         plt.hist(data, bins=bins)
         plt.savefig(file_name)
