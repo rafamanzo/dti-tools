@@ -36,9 +36,9 @@ class MapRegionHistogramStep(CPUParallelStep):
         self.differences_map = np.zeros((0, 0, 0)) # pylint: disable=E1101
 
     def validate_args(self):
-        if len(sys.argv) != 3:
+        if len(sys.argv) != 9:
             print('This program expects two arguments: '+
-                  ' map file; mask file.',
+                  ' map file; mask file; bins count; x start; x end; y lim; x label; title.',
                   file=sys.stderr)
             exit(1)
         return validate_tensor_and_mask(1, 2)
@@ -46,6 +46,12 @@ class MapRegionHistogramStep(CPUParallelStep):
     def load_data(self):
         self.__map = nib.load(str(sys.argv[1]))
         self.__mask = nib.load(str(sys.argv[2]))
+        self.__bins = int(sys.argv[3])
+        self.__x_start = float(sys.argv[4])
+        self.__x_end = float(sys.argv[5])
+        self.__y_lim = int(sys.argv[6])
+        self.__x_label = str(sys.argv[7])
+        self.__title = str(sys.argv[8])
         self.shape = (self.__map.shape[0],
                       self.__map.shape[1],
                       self.__map.shape[2])
@@ -72,8 +78,29 @@ class MapRegionHistogramStep(CPUParallelStep):
 
     def __plot_histogram(self, data, file_name):
         """Plots a histogram for the given data and saves in the file"""
+        if self.__bins > 0:
+            bins = self.__bins
+        else:
+            bins = len(data)
+
         plt.clf()
-        plt.gca().xaxis.get_major_formatter().set_powerlimits((0, 0))
-        plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
-        plt.hist(data, bins=len(data))
+
+        if self.__x_start != self.__x_end:
+            plt.gca().set_xlim((self.__x_start, self.__x_end))
+            plt.gca().xaxis.get_major_formatter().set_scientific(True)
+        else:
+            plt.gca().xaxis.get_major_formatter().set_powerlimits((0, 0))
+
+        if self.__y_lim > 0:
+            plt.gca().set_ylim(top=self.__y_lim)
+        else:
+            plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
+
+        if self.__x_label != "":
+            plt.xlabel(self.__x_label)
+
+        if self.__title != "":
+            plt.title(self.__title)
+
+        plt.hist(data, bins=bins)
         plt.savefig(file_name)
