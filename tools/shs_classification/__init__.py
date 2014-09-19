@@ -1,0 +1,1 @@
+"""Classifies voxels acordingly to their sperical harmonics series truncation"""
