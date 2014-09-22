@@ -2,6 +2,7 @@ import numpy as np
 
 from tools.base import Base
 from tools.shs_classification.classifier import Classifier
+from tools.shs_classification.acquisition_direction import AcquisitionDirection
 
 class SHSMapper(Base):
     """Maps the whole dataset using the classifier"""
@@ -21,5 +22,13 @@ class SHSMapper(Base):
         nib.Nifti1Image(self.__classification, self.mask.affine()).to_filename("%s.nii.gz" % self.output_path)
 
     def __load_acquisition_directions(self, acquisition_directions_path):
-        pass
         acquisition_directions_file = open(acquisition_directions_path, 'r')
+        acquisition_directions = []
+
+        for line in acquisition_directions_file.readlines():
+            directions = line.split()
+            if len(directions) == 3:
+                acquisition_directions.append(AcquisitionDirection(float(directions[0]), float(directions[1]), float(directions[2])))
+
+        return acquisition_directions
+
