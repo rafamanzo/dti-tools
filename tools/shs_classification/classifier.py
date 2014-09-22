@@ -43,6 +43,6 @@ class Classifier(object):
         adcs = []
 
         for acquisition_direction in self.__acquisition_directions:
-            adcs.append(adc(tensor, acquisition_directions))
+            adcs.append(adc(tensor, acquisition_direction))
 
         return adcs

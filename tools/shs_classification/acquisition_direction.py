@@ -17,6 +17,6 @@ class AcquisitionDirection(object):
 
         r = m.sqrt(XsqPlusYsq + self.__z**2)
         theta = m.atan2(self.__z,m.sqrt(XsqPlusYsq))
-        phi = m.atan2(y,self.__x)
+        phi = m.atan2(self.__y,self.__x)
 
         return r, theta, phi

@@ -8,7 +8,7 @@ class SHSMapper(Base):
     """Maps the whole dataset using the classifier"""
     def __init__(self, tensor_path, mask_path, acquisition_directions_path, significance_level, output_path):
         super(SHSMapper, self).__init__(tensor_path, mask_path, output_path)
-        self.__classifier = Classifier(significance_level, self.__load_acquisition_directions(acquisition_directions_path))
+        self.__classifier = Classifier(float(significance_level), self.__load_acquisition_directions(acquisition_directions_path))
         self.__classification = np.zeros(self.mask.shape(), dtype=np.uint8)
 
     def classify(self):
@@ -16,7 +16,7 @@ class SHSMapper(Base):
             for j in range(self.mask.shape()[1]):
                 for k in range(self.mask.shape()[2]):
                     if self.mask.inside((i,j,k)):
-                        self.__classification[(i,j,k)] = self.__classifier.classify(self.__tensor_data.get((i,j,k))) + 1
+                        self.__classification[(i,j,k)] = self.__classifier.classify(self.tensor_data.get((i,j,k))) + 1
 
     def save(self):
         nib.Nifti1Image(self.__classification, self.mask.affine()).to_filename("%s.nii.gz" % self.output_path)

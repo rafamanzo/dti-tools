@@ -7,7 +7,7 @@ class Model(object):
         self.order = order
         self.__coefficients = coefficients
 
-    def value(acquisition_direction):
+    def value(self, acquisition_direction):
         accum = complex(0, 0)
 
         for l in range(self.order + 1):

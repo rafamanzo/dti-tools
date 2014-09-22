@@ -8,7 +8,7 @@ class SHSCoefficients(object):
         super(SHSCoefficients, self).__init__()
         self.__m = self.__m(acquisition_directions, order)
 
-    def coefficients(adcs):
+    def coefficients(self, adcs):
         f = np.matrix(adcs).T
 
         return self.__m*f
@@ -25,4 +25,7 @@ class SHSCoefficients(object):
             row = []
             for l in range(order + 1):
                 for m in range(-l, (l + 1)):
-                    row << sph_harm(l,m,acquisition_direction) #SciPy inverts phi and theta
+                    row.append(sph_harm(l,m,acquisition_direction))
+            rows.append(row)
+
+        return np.matrix(rows)

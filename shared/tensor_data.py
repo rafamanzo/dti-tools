@@ -10,4 +10,4 @@ class TensorData(object):
         self.__data = nib.load(tensor_path).get_data()
 
     def get(self, index):
-        return Tensor(self.__data[index][0..5])
+        return Tensor(self.__data[index][slice(0,6)])

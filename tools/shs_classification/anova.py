@@ -10,10 +10,10 @@ class Anova(object):
         self.__acquisition_directions = acquisition_directions
         self.__tensor = tensor
 
-    def equivalent(significance_level):
+    def equivalent(self, significance_level):
         f = (
              ((len(self.__acquisition_directions) - self.__free_parameters(self.__model_b))*(self.__variance(self.__model_b) - self.__variance(self.__model_a)))/
-             ((self.__free_parameters(self.model_b) - self.__free_parameters(self.model_a))*self.__mean_squared_error(self.__model_b))
+             ((self.__free_parameters(self.__model_b) - self.__free_parameters(self.__model_a))*self.__mean_squared_error(self.__model_b))
             )
 
         # Freedom degrees
