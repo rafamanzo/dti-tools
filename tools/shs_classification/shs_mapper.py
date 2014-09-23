@@ -67,13 +67,16 @@ class SHSMapper(Base):
         consumer.start()
 
         producer.join()
+        print('Finished producing\n')
 
         for classifier in classifiers:
             classifier.join()
+        print('Finished classifying\n')
 
         self.__classified.put(PoisonPill())
 
         consumer.join()
+        print('Finished consuming\n')
 
     def __sequential_run(self):
         for i in range(self.mask.shape()[0]):
