@@ -11,18 +11,23 @@ class Anova(object):
         self.__tensor = tensor
 
     def equivalent(self, significance_level):
-        f = (
-             ((len(self.__acquisition_directions) - self.__free_parameters(self.__model_b))*(self.__variance(self.__model_b) - self.__variance(self.__model_a)))/
-             ((self.__free_parameters(self.__model_b) - self.__free_parameters(self.__model_a))*self.__mean_squared_error(self.__model_b))
-            )
+        f_denominator = ((self.__free_parameters(self.__model_b) - self.__free_parameters(self.__model_a))*self.__mean_squared_error(self.__model_b))
 
-        # Freedom degrees
-        d1 = len(self.__acquisition_directions) - self.__free_parameters(self.__model_b) - 1
-        d2 = self.__free_parameters(self.__model_b) - self.__free_parameters(self.__model_a)
+        if f_denominator == 0.0:
+            return False
+        else:
+            f = (
+                 ((len(self.__acquisition_directions) - self.__free_parameters(self.__model_b))*(self.__variance(self.__model_b) - self.__variance(self.__model_a)))/
+                 f_denominator
+                )
 
-        distribution = f_dist(d1, d2)
+            # Freedom degrees
+            d1 = len(self.__acquisition_directions) - self.__free_parameters(self.__model_b) - 1
+            d2 = self.__free_parameters(self.__model_b) - self.__free_parameters(self.__model_a)
 
-        return f <= distribution.ppf(1.0 - significance_level)
+            distribution = f_dist(d1, d2)
+
+            return f <= distribution.ppf(1.0 - significance_level)
 
     def __mean(self, model):
         accum = complex(0,0)

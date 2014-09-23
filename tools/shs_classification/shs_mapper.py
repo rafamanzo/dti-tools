@@ -17,10 +17,11 @@ class SHSMapper(Base):
             for j in range(self.mask.shape()[1]):
                 for k in range(self.mask.shape()[2]):
                     if self.mask.inside((i,j,k)):
+                        print((i,j,k))
                         self.__classification[(i,j,k)] = self.__classifier.classify(self.tensor_data.get((i,j,k))) + 1
 
     def save(self):
-        nib.Nifti1Image(self.__classification, self.mask.affine()).to_filename("%s.nii.gz" % self.output_path)
+        nib.Nifti1Image(self.__classification, self.mask.affine()).to_filename("%s" % self.output_path)
 
     def __load_acquisition_directions(self, acquisition_directions_path):
         acquisition_directions_file = open(acquisition_directions_path, 'r')

@@ -9,16 +9,17 @@ class Classifier(object):
         super(Classifier, self).__init__()
         self.__significance_level = significance_level
         self.__acquisition_directions = acquisition_directions
+        self.__lmax = self.__lmax()
+        self.__coefficients = self.__coefficients()
 
     def classify(self, tensor):
-        lmax = self.__lmax()
         adcs = self.__adcs(tensor)
 
-        selected_model = Model(0, SHSCoefficients(self.__acquisition_directions, 0).coefficients(adcs))
+        selected_model = Model(0, self.__coefficients[0].coefficients(adcs))
 
-        if lmax > 0:
-            for order in range(2, lmax + 1, 2):
-                new_model = Model(order, SHSCoefficients(self.__acquisition_directions, order).coefficients(adcs))
+        if self.__lmax > 0:
+            for order in range(2, self.__lmax + 1, 2):
+                new_model = Model(order, self.__coefficients[order].coefficients(adcs))
 
                 if Anova(selected_model, new_model, self.__acquisition_directions, tensor).equivalent(self.__significance_level):
                     selected_model = new_model
@@ -46,3 +47,12 @@ class Classifier(object):
             adcs.append(adc(tensor, acquisition_direction))
 
         return adcs
+
+    def __coefficients(self):
+        coefficients = []
+
+        for l in range(0, self.__lmax + 1, 2):
+            coefficients.append(SHSCoefficients(self.__acquisition_directions, l))
+            coefficients.append(None)
+
+        return coefficients
