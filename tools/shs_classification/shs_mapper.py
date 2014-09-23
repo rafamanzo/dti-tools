@@ -30,7 +30,7 @@ class SHSMapper(Base):
 
         self.__to_be_classified = Queue()
         self.__classified = Queue()
-        self.__worker_count = cpu_count()
+        self.__worker_count = cpu_count() - 1
 
 
     def save(self):
@@ -80,7 +80,6 @@ class SHSMapper(Base):
             for j in range(self.mask.shape()[1]):
                 for k in range(self.mask.shape()[2]):
                     if self.mask.inside((i,j,k)):
-                        print((i,j,k))
                         self.__classification[(i,j,k)] = self.__classifier.classify(self.tensor_data.get((i,j,k))) + 1
 
     def __produce(self):
@@ -99,7 +98,6 @@ class SHSMapper(Base):
         coordinate = self.__to_be_classified.get()
 
         while not type(coordinate) is PoisonPill:
-            print(coordinate)
             self.__classified.put(CoordinateClassification(coordinate, self.__classifier.classify(self.tensor_data.get(coordinate)) + 1))
             coordinate = self.__to_be_classified.get()
 
