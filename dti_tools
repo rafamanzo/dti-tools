@@ -38,7 +38,7 @@ def dti_tools(cxt, tensor_path, mask_path, output_path):
 @click.pass_obj
 def shs_classification(base, acquisition_directions_file, significance_level):
     mapper = SHSMapper(base.tensor_path, base.mask_path, acquisition_directions_file, significance_level, base.output_path)
-    mapper.classify()
+    mapper.run()
     mapper.save()
 
 if __name__ == '__main__':
