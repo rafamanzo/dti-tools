@@ -1,4 +1,5 @@
 import numpy as np
+import nibabel as nib
 
 from tools.base import Base
 from tools.shs_classification.classifier import Classifier
