@@ -30,7 +30,7 @@ class SHSMapper(Base):
 
         self.__to_be_classified = Queue()
         self.__classified = Queue()
-        self.__worker_count = cpu_count() - 1
+        self.__worker_count = cpu_count()
 
 
     def save(self):
@@ -67,16 +67,13 @@ class SHSMapper(Base):
         consumer.start()
 
         producer.join()
-        print('Finished producing\n')
 
         for classifier in classifiers:
             classifier.join()
-        print('Finished classifying\n')
 
         self.__classified.put(PoisonPill())
 
         consumer.join()
-        print('Finished consuming\n')
 
     def __sequential_run(self):
         for i in range(self.mask.shape()[0]):
@@ -111,5 +108,6 @@ class SHSMapper(Base):
 
         while not type(coordinate_classification) is PoisonPill:
             self.__classification[coordinate_classification.coordinate] = coordinate_classification.classification
+            coordinate_classification = self.__classified.get()
 
         return True
