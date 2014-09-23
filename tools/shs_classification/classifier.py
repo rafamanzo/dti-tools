@@ -10,6 +10,7 @@ class Classifier(object):
         self.__significance_level = significance_level
         self.__acquisition_directions = acquisition_directions
         self.__lmax = self.__lmax()
+        print(self.__lmax)
         self.__coefficients = self.__coefficients()
 
     def classify(self, tensor):
@@ -37,8 +38,7 @@ class Classifier(object):
             if accum < len(self.__acquisition_directions):
                 lmax += 2
 
-
-            return lmax
+        return lmax
 
     def __adcs(self, tensor):
         adcs = []
