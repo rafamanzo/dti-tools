@@ -27,7 +27,7 @@ class Anova(object):
 
             distribution = f_dist(d1, d2)
 
-            return f <= distribution.ppf(1.0 - significance_level)
+            return f <= distribution.ppf(significance_level)
 
     def __mean(self, model):
         accum = complex(0,0)

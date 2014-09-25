@@ -23,9 +23,9 @@ class CoordinateClassification(object):
 
 class SHSMapper(Base):
     """Maps the whole dataset using the classifier"""
-    def __init__(self, tensor_path, mask_path, acquisition_directions_path, significance_level, output_path):
+    def __init__(self, tensor_path, mask_path, acquisition_directions_path, output_path):
         super(SHSMapper, self).__init__(tensor_path, mask_path, output_path)
-        self.__classifier = Classifier(float(significance_level), self.__load_acquisition_directions(acquisition_directions_path))
+        self.__classifier = Classifier(self.__load_acquisition_directions(acquisition_directions_path))
         self.__classification = np.zeros(self.mask.shape(), dtype=np.uint8)
 
         self.__to_be_classified = Queue()

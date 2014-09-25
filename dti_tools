@@ -34,10 +34,9 @@ def dti_tools(cxt, tensor_path, mask_path, output_path):
 
 @dti_tools.command()
 @click.argument('acquisition_directions_file', type=click.Path(exists=True))
-@click.argument('significance_level')
 @click.pass_obj
-def shs_classification(base, acquisition_directions_file, significance_level):
-    mapper = SHSMapper(base.tensor_path, base.mask_path, acquisition_directions_file, significance_level, base.output_path)
+def shs_classification(base, acquisition_directions_file):
+    mapper = SHSMapper(base.tensor_path, base.mask_path, acquisition_directions_file, base.output_path)
     mapper.run()
     mapper.save()
 

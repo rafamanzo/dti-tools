@@ -5,11 +5,11 @@ from tools.shs_classification.anova import Anova
 
 class Classifier(object):
     """Classify each voxel accordingly to its fit to the spherical harmonics model order"""
-    def __init__(self, significance_level, acquisition_directions):
+    def __init__(self, acquisition_directions):
         super(Classifier, self).__init__()
-        self.__significance_level = significance_level
         self.__acquisition_directions = acquisition_directions
         self.__lmax = self.__lmax()
+        self.__significance_levels = self.__prompt_significance_levels()
         self.__coefficients = self.__coefficients()
 
     def classify(self, tensor):
@@ -21,7 +21,7 @@ class Classifier(object):
             for order in range(2, self.__lmax + 1, 2):
                 new_model = Model(order, self.__coefficients[order].coefficients(adcs))
 
-                if Anova(selected_model, new_model, self.__acquisition_directions, tensor).equivalent(self.__significance_level):
+                if Anova(selected_model, new_model, self.__acquisition_directions, tensor).equivalent(self.__significance_levels[new_model.order]):
                     selected_model = new_model
 
         return selected_model.order
@@ -55,3 +55,12 @@ class Classifier(object):
             coefficients.append(None)
 
         return coefficients
+
+    def __prompt_significance_levels(self):
+        significance_levels = [None, None]
+
+        for order in range(2, self.__lmax + 1, 2):
+            significance_levels.append(float(input("\nSignificance level for %d order models: " % order)))
+            significance_levels.append(None)
+
+        return significance_levels
