@@ -23,6 +23,8 @@ class Classifier(object):
 
                 if Anova(selected_model, new_model, self.__acquisition_directions, tensor).equivalent(self.__significance_levels[new_model.order]):
                     selected_model = new_model
+                else:
+                    return selected_model.order
 
         return selected_model.order
 
